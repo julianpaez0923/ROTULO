@@ -3,179 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAGA |ROTULO</title>
+    <title>SAGA | SISTEMA INTEGRAL DE LOGÍSTICA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --primary: #000000;
+            --primary: #000;
             --accent: #2563eb;
-            --border-width: 3px;
-            --bg-site: #f1f5f9;
+            --bg-site: #f8fafc;
+            --border: #000;
         }
 
-        * { box-sizing: border-box; font-family: 'Arial Black', sans-serif; -webkit-print-color-adjust: exact; }
-        body { margin: 0; background: var(--bg-site); display: flex; height: 100vh; color: #000; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        body { margin: 0; background: var(--bg-site); display: flex; height: 100vh; font-family: 'Inter', sans-serif; color: #1e293b; }
 
-        /* --- SIDEBAR CON PESTAÑAS --- */
+        /* --- PANEL LATERAL --- */
         aside {
-            width: 380px; background: #ffffff; border-right: 1px solid #cbd5e1;
-            padding: 20px; display: flex; flex-direction: column;
-            z-index: 100; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            width: 400px; background: #fff; border-right: 1px solid #e2e8f0;
+            padding: 25px; display: flex; flex-direction: column; overflow-y: auto;
+            box-shadow: 10px 0 15px -5px rgba(0,0,0,0.05); z-index: 100;
         }
-        .logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; margin-bottom: 5px; }
-        .logo span { color: var(--accent); }
-        
-        /* Tabs */
-        .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #eee; padding: 5px; border-radius: 8px; }
+        .logo-box { margin-bottom: 25px; }
+        .logo-box h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .logo-box span { color: var(--accent); }
+
+        /* Pestañas */
+        .tabs { display: flex; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 10px; margin-bottom: 20px; }
         .tab-btn { 
-            flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; 
-            font-size: 10px; font-weight: 800; text-transform: uppercase; transition: 0.3s;
+            flex: 1; padding: 10px 5px; border: none; border-radius: 7px; cursor: pointer; 
+            font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; transition: 0.2s;
         }
-        .tab-btn.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); color: var(--accent); }
+        .tab-btn.active { background: #fff; color: var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
         .form-section { display: none; flex-direction: column; gap: 12px; }
         .form-section.active { display: flex; }
 
-        .form-group { display: flex; flex-direction: column; gap: 4px; font-family: 'Segoe UI', sans-serif; }
-        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
-        input, select { padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-weight: bold; }
-        input:focus { outline: none; border-color: var(--accent); }
-
-        /* Lista temporal para Multi-ítem */
-        #temp-list { 
-            background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; 
-            padding: 10px; font-family: 'Segoe UI', sans-serif; font-size: 12px;
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #475569; letter-spacing: 0.5px; }
+        input, textarea, select { 
+            padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; 
+            font-size: 13px; font-family: inherit; transition: all 0.2s;
         }
-        .temp-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 4px 0; }
+        input:focus { outline: none; border-color: var(--accent); background: #fff; }
 
-        .btn { padding: 12px; border: none; border-radius: 6px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 12px; }
-        .btn-add { background: var(--accent); color: white; }
-        .btn-generate { background: #10b981; color: white; margin-top: 5px; }
-        .btn-print { background: #000; color: white; margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; }
+        .btn { padding: 14px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: 0.2s; }
+        .btn-add { background: var(--primary); color: white; }
+        .btn-add:hover { background: #333; }
+        .btn-print { background: #10b981; color: white; margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; }
 
-        /* --- ÁREA DE VISTA PREVIA --- */
-        main { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        #label-container { display: grid; gap: 20px; width: 100%; max-width: 1000px; }
+        /* --- VISTA PREVIA --- */
+        main { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        #label-container { display: grid; gap: 25px; width: 100%; max-width: 900px; }
+        
+        /* Grillas */
         .grid-small { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
         .grid-large { grid-template-columns: 1fr; }
 
-        /* --- DISEÑO DEL RÓTULO --- */
-        .label-card {
-            background: white; border: var(--border-width) solid #000;
-            display: flex; flex-direction: column; position: relative;
-            aspect-ratio: 1.6 / 1; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            overflow: hidden;
+        .card { 
+            background: #fff; border: 2px solid #000; position: relative; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .btn-del { 
+            position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; 
+            border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; z-index: 50;
         }
 
-        .l-header { background: #000; color: #fff; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; }
-        .l-header .brand { font-size: 18px; }
-        
-        /* Contenido para Multi-Item */
-        .l-body-multi { flex: 1; padding: 10px 15px; border-bottom: var(--border-width) solid #000; overflow: hidden; }
-        .multi-table { width: 100%; border-collapse: collapse; font-family: 'Segoe UI', sans-serif; }
-        .multi-table th { text-align: left; font-size: 9px; border-bottom: 2px solid #000; padding-bottom: 3px; }
-        .multi-table td { font-size: 13px; font-weight: 900; padding: 4px 0; border-bottom: 1px solid #eee; }
-        .multi-table .td-qty { text-align: right; font-size: 15px; color: var(--accent); }
+        /* --- ESTILO 1: GUÍA DE ENVÍO (MODERNO) --- */
+        .style-shipping { font-family: 'Inter', sans-serif; aspect-ratio: 1.58 / 1; }
+        .sh-head { display: flex; border-bottom: 2px solid #000; height: 60px; }
+        .sh-logo { background: #000; color: #fff; padding: 0 20px; display: flex; align-items: center; font-weight: 800; min-width: 200px; }
+        .sh-meta { flex: 1; padding: 10px; font-size: 10px; display: flex; flex-direction: column; justify-content: center; }
+        .sh-body { display: grid; grid-template-columns: 1fr 1fr; flex: 1; }
+        .sh-col { border-right: 1px solid #000; display: flex; flex-direction: column; }
+        .sh-box { padding: 12px; border-bottom: 1px solid #000; flex: 1; }
+        .sh-box.dest { flex: 2; border-bottom: 2px solid #000; background: #fafafa; }
+        .sh-label { font-size: 9px; font-weight: 700; color: #666; margin-bottom: 3px; display: block; }
+        .sh-val-lg { font-size: 32px; font-weight: 800; color: var(--accent); line-height: 1; }
+        .sh-val-md { font-size: 18px; font-weight: 700; }
+        .sh-foot { height: 90px; display: flex; align-items: center; padding: 0 20px; gap: 20px; }
 
-        /* Contenido para Single-Item (El anterior) */
-        .l-body-single { flex: 1; display: grid; grid-template-columns: 1fr 120px; border-bottom: var(--border-width) solid #000; }
-        .l-main-info { padding: 15px; border-right: var(--border-width) solid #000; display: flex; flex-direction: column; justify-content: center; }
-        .l-qty-zone { padding: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #f1f5f9; }
-        .l-content-name { font-size: 1.8rem; line-height: 1.1; }
-        .l-content-qty { font-size: 2.5rem; }
+        /* --- ESTILO 2: INDUSTRIAL --- */
+        .style-industrial { aspect-ratio: 1.6 / 1; font-family: 'Montserrat', sans-serif; }
+        .ind-header { background: #000; color: #fff; padding: 10px 20px; display: flex; justify-content: space-between; font-weight: 800; }
+        .ind-body { flex: 1; display: grid; grid-template-columns: 1fr 120px; border-bottom: 2px solid #000; }
+        .ind-info { padding: 20px; border-right: 2px solid #000; display: flex; flex-direction: column; justify-content: center; }
+        .ind-qty-box { background: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .ind-footer { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; height: 80px; }
 
-        .l-footer { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; height: 80px; }
-        .l-meta { font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; }
-        .qr-wrapper { border: 2px solid #000; padding: 3px; background: #fff; width: 60px; height: 60px; }
+        /* --- ESTILO 3: PACKING LIST --- */
+        .style-list { aspect-ratio: 1.6 / 1; font-family: 'Inter', sans-serif; }
+        .list-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .list-table th { text-align: left; font-size: 10px; border-bottom: 1px solid #000; padding: 5px; }
+        .list-table td { font-size: 14px; font-weight: 600; padding: 8px 5px; border-bottom: 1px solid #eee; }
 
-        .btn-del {
-            position: absolute; top: 5px; right: 5px; background: #ef4444; color: white;
-            border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 12px; z-index: 10;
-        }
-
-        /* --- IMPRESIÓN --- */
+        /* --- CONFIGURACIÓN DE IMPRESIÓN --- */
         @media print {
-            @page { size: A4; margin: 0.5cm; }
-            body { background: white; display: block; }
+            @page { size: Letter; margin: 0; }
+            body { background: #fff; display: block; }
             aside, .btn-del { display: none !important; }
-            main { padding: 0; background: white; }
-            #label-container { display: grid !important; gap: 10px; max-width: none; }
+            main { padding: 0; display: block; }
+            #label-container { display: grid !important; gap: 0; max-width: none; width: 100%; }
+            
+            /* Dos por hoja (Media página) */
+            .grid-large .card { 
+                height: 13.9cm; /* Mitad exacta de una hoja carta */
+                border: 1px solid #000;
+                page-break-inside: avoid;
+                margin: 0;
+            }
+            .grid-large .sh-val-lg { font-size: 50px; }
+
+            /* Ocho por hoja */
             .grid-small { grid-template-columns: 1fr 1fr !important; }
-            .grid-small .label-card { height: 6.8cm; border-width: 2px; box-shadow: none; break-inside: avoid; }
-            .grid-large { grid-template-columns: 1fr !important; }
-            .grid-large .label-card { height: 13cm; border-width: 4px; box-shadow: none; break-inside: avoid; margin-bottom: 10px; }
-            .grid-large .l-content-name { font-size: 3.5rem; }
-            .grid-large .l-content-qty { font-size: 5rem; }
-            .grid-large .multi-table td { font-size: 22px; padding: 8px 0; }
-            .grid-large .multi-table th { font-size: 14px; }
+            .grid-small .card { 
+                height: 6.9cm; 
+                margin: 0.1cm;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="logo">SAGA<span>.</span>ROTULO</div>
+        <div class="logo-box">
+            <h1>NICHOLL'S<span>.</span>PRO</h1>
+        </div>
         
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('single')">Individual</button>
-            <button class="tab-btn" onclick="switchTab('multi')">Multi-Ítem</button>
+            <button class="tab-btn active" onclick="switchTab('shipping')">Guía Envíos</button>
+            <button class="tab-btn" onclick="switchTab('industrial')">Industrial</button>
+            <button class="tab-btn" onclick="switchTab('list')">Packing List</button>
         </div>
 
-        <div id="form-single" class="form-section active">
+        <div id="form-shipping" class="form-section active">
             <div class="form-group">
-                <label>Producto</label>
-                <input type="text" id="sName" placeholder="EJ: CABLE HDMI 2M">
+                <label>Destinatario (Entrega a:)</label>
+                <input type="text" id="gDestino" placeholder="Ej: DON ELBER">
             </div>
-            <div class="form-group">
-                <label>Cantidad</label>
-                <input type="text" id="sQty" placeholder="EJ: 100 UDS">
-            </div>
-            <button class="btn btn-add" onclick="addSingle()">Añadir Rótulo</button>
-        </div>
-
-        <div id="form-multi" class="form-section">
-            <div style="background: #f1f5f9; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
                 <div class="form-group">
-                    <label>Producto</label>
-                    <input type="text" id="mItemName" placeholder="Nombre ítem">
+                    <label>Peso</label>
+                    <input type="text" id="gPeso" placeholder="Ej: 394 KG">
+                </div>
+                <div class="form-group">
+                    <label>Bultos</label>
+                    <input type="text" id="gBultos" placeholder="Ej: 27 CAJAS">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Contenido Detallado</label>
+                <textarea id="gContenido" rows="3" placeholder="Descripción de los artículos..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>ID de Referencia</label>
+                <input type="text" id="gRef" placeholder="#ID-78735">
+            </div>
+            <button class="btn btn-add" style="background:var(--accent)" onclick="addShippingLabel()">Añadir Guía Pro</button>
+        </div>
+
+        <div id="form-industrial" class="form-section">
+            <div class="form-group">
+                <label>Nombre del Producto</label>
+                <input type="text" id="iName" placeholder="CABLE HDMI 4K">
+            </div>
+            <div class="form-group">
+                <label>Cantidad (QTY)</label>
+                <input type="text" id="iQty" placeholder="100 UNIDADES">
+            </div>
+            <button class="btn btn-add" onclick="addIndustrialLabel()">Añadir Rótulo Simple</button>
+        </div>
+
+        <div id="form-list" class="form-section">
+            <div style="background:#f1f5f9; padding:10px; border-radius:8px; display:flex; flex-direction:column; gap:8px;">
+                <div class="form-group">
+                    <label>Ítem</label>
+                    <input type="text" id="lItem">
                 </div>
                 <div class="form-group">
                     <label>Cant.</label>
-                    <input type="text" id="mItemQty" placeholder="Ej: 5">
+                    <input type="text" id="lQty">
                 </div>
-                <button class="btn btn-add" style="background:#64748b" onclick="addItemToList()">+ Añadir a la lista</button>
+                <button class="btn" style="background:#64748b; color:white" onclick="addItemToList()">+ Agregar a lista</button>
             </div>
-            
-            <label style="margin-top:10px">Lista Actual:</label>
-            <div id="temp-list">No hay ítems aún...</div>
-            
-            <button class="btn btn-generate" onclick="addMultiLabel()">Generar Rótulo Multi-Ítem</button>
+            <div id="temp-list-display" style="font-size:11px; margin-top:10px; color:#64748b"></div>
+            <button class="btn btn-add" style="background:#10b981" onclick="addListLabel()">Generar Packing List</button>
         </div>
 
-        <hr style="width:100%; border:0; border-top:1px solid #eee; margin:15px 0;">
+        <hr style="width:100%; border:0; border-top:1px solid #e2e8f0; margin:20px 0;">
 
         <div class="form-group">
-            <label>Copias de este rótulo</label>
+            <label>Copias a Generar</label>
             <input type="number" id="pCopies" value="1" min="1">
         </div>
 
-        <div class="form-group">
-            <label>Tamaño de Impresión</label>
+        <div class="form-group" style="margin-top:10px">
+            <label>Formato de Salida</label>
             <select id="pSize" onchange="updateGrid()">
-                <option value="grid-small">PEQUEÑO (2 col / 8 por hoja)</option>
-                <option value="grid-large">GRANDE (1 col / 2 por hoja)</option>
+                <option value="grid-large">GRANDE (2 por hoja - Media Página)</option>
+                <option value="grid-small">PEQUEÑO (8 por hoja - Cuarto de Página)</option>
             </select>
         </div>
 
         <button class="btn btn-print" onclick="window.print()">
-            🖨️ IMPRIMIR TODO
+            🖨️ IMPRIMIR AHORA
         </button>
-
-        <button onclick="document.getElementById('label-container').innerHTML=''" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:10px; font-weight:bold; margin-top:10px;">VACIAR COLA</button>
+        
+        <button onclick="document.getElementById('label-container').innerHTML=''" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:10px; margin-top:15px; text-decoration:underline;">VACIAR TODO</button>
     </aside>
 
     <main>
-        <div id="label-container" class="grid-small"></div>
+        <div id="label-container" class="grid-large"></div>
     </main>
 
     <script>
@@ -188,108 +227,143 @@
             document.getElementById('form-' + type).classList.add('active');
         }
 
-        // --- LÓGICA MULTI-ÍTEM ---
-        function addItemToList() {
-            const name = document.getElementById('mItemName').value.toUpperCase();
-            const qty = document.getElementById('mItemQty').value.toUpperCase();
-            if(!name || !qty) return alert("Completa nombre y cantidad");
-            
-            multiItems.push({name, qty});
-            renderTempList();
-            document.getElementById('mItemName').value = "";
-            document.getElementById('mItemQty').value = "";
-            document.getElementById('mItemName').focus();
-        }
-
-        function renderTempList() {
-            const box = document.getElementById('temp-list');
-            if(multiItems.length === 0) { box.innerHTML = "No hay ítems..."; return; }
-            box.innerHTML = multiItems.map((it, idx) => `
-                <div class="temp-item">
-                    <span>${it.name}</span>
-                    <b>x${it.qty}</b>
-                </div>
-            `).join('');
-        }
-
-        function addMultiLabel() {
-            if(multiItems.length === 0) return alert("La lista está vacía");
-            const copies = parseInt(document.getElementById('pCopies').value) || 1;
-            
-            for(let i=0; i<copies; i++) {
-                const qrId = "qr_" + Date.now() + "_" + i;
-                const date = new Date().toLocaleDateString();
-                
-                const card = document.createElement('div');
-                card.className = 'label-card';
-                
-                let tableRows = multiItems.map(it => `
-                    <tr><td>${it.name}</td><td class="td-qty">${it.qty}</td></tr>
-                `).join('');
-
-                card.innerHTML = `
-                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
-                    <div class="l-header"><div class="brand">NICHOLL´S TACTICA | MULTI</div><div>📦</div></div>
-                    <div class="l-body-multi">
-                        <table class="multi-table">
-                            <thead><tr><th>PRODUCTO</th><th style="text-align:right">CANT</th></tr></thead>
-                            <tbody>${tableRows}</tbody>
-                        </table>
-                    </div>
-                    <div class="l-footer">
-                        <div class="l-meta">PACKING LIST SAGA<br>FECHA: ${date}</div>
-                        <div class="qr-wrapper" id="${qrId}"></div>
-                    </div>
-                `;
-                document.getElementById('label-container').appendChild(card);
-                
-                new QRCode(document.getElementById(qrId), {
-                    text: JSON.stringify(multiItems),
-                    width: 60, height: 60
-                });
-            }
-            multiItems = [];
-            renderTempList();
-        }
-
-        // --- LÓGICA INDIVIDUAL (TU RÓTULO ORIGINAL) ---
-        function addSingle() {
-            const name = document.getElementById('sName').value.toUpperCase();
-            const qty = document.getElementById('sQty').value.toUpperCase();
-            const copies = parseInt(document.getElementById('pCopies').value) || 1;
-            if(!name) return alert("Ingresa el nombre");
-
-            for(let i=0; i<copies; i++) {
-                const qrId = "qrs_" + Date.now() + "_" + i;
-                const card = document.createElement('div');
-                card.className = 'label-card';
-                card.innerHTML = `
-                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
-                    <div class="l-header"><div class="brand">NICHOLL´S TACTICA S.A.S</div><div>⬆️</div></div>
-                    <div class="l-body-single">
-                        <div class="l-main-info">
-                            <span style="font-size:10px; color:#666">PRODUCTO</span>
-                            <div class="l-content-name">${name}</div>
-                        </div>
-                        <div class="l-qty-zone">
-                            <span style="font-size:10px; color:#666">QTY</span>
-                            <div class="l-content-qty">${qty}</div>
-                        </div>
-                    </div>
-                    <div class="l-footer">
-                        <div class="l-meta">SAGA JULIAN ACOSTA<br>DATE: ${new Date().toLocaleDateString()}</div>
-                        <div class="qr-wrapper" id="${qrId}"></div>
-                    </div>
-                `;
-                document.getElementById('label-container').appendChild(card);
-                new QRCode(document.getElementById(qrId), { text: name + " " + qty, width: 60, height: 60 });
-            }
-            document.getElementById('sName').value = "";
-            document.getElementById('sQty').value = "";
-        }
-
         function updateGrid() {
             document.getElementById('label-container').className = document.getElementById('pSize').value;
+        }
+
+        // --- LÓGICA: GUÍA DE ENVÍO PRO ---
+        function addShippingLabel() {
+            const dest = document.getElementById('gDestino').value.toUpperCase();
+            const peso = document.getElementById('gPeso').value.toUpperCase();
+            const bultos = document.getElementById('gBultos').value.toUpperCase();
+            const cont = document.getElementById('gContenido').value;
+            const ref = document.getElementById('gRef').value.toUpperCase() || "#GUIA-" + Date.now().toString().slice(-5);
+            const copies = parseInt(document.getElementById('pCopies').value) || 1;
+
+            if(!dest) return alert("Ingresa el destino");
+
+            for(let i=0; i<copies; i++) {
+                const qrId = "qrg_" + Date.now() + "_" + i;
+                const card = document.createElement('div');
+                card.className = 'card style-shipping';
+                card.innerHTML = `
+                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
+                    <header class="sh-head">
+                        <div class="sh-logo">NICHOLL'S TACTICA S.A.S</div>
+                        <div class="sh-meta">
+                            <b>GUÍA DE TRANSPORTE NICHOLL´S - SAGA</b>
+                            <span>FECHA: ${new Date().toLocaleDateString()} | ALMACÉN CENTRAL</span>
+                        </div>
+                    </header>
+                    <div class="sh-body">
+                        <div class="sh-col">
+                            <div class="sh-box">
+                                <span class="sh-label">REMITENTE:</span>
+                                <span class="sh-val-md">NICHOLL'S TACTICA S.A.S</span>
+                            </div>
+                            <div class="sh-box">
+                                <span class="sh-label">PESO REGISTRADO:</span>
+                                <span class="sh-val-md">${peso || '---'}</span>
+                            </div>
+                            <div class="sh-box">
+                                <span class="sh-label">TOTAL UNIDADES:</span>
+                                <span class="sh-val-md">${bultos || '---'}</span>
+                            </div>
+                        </div>
+                        <div class="sh-col">
+                            <div class="sh-box dest">
+                                <span class="sh-label">DESTINATARIO / ENTREGA:</span>
+                                <span class="sh-val-lg">${dest}</span>
+                            </div>
+                            <div class="sh-box">
+                                <span class="sh-label">CONTENIDO:</span>
+                                <div style="font-size:12px; line-height:1.2">${cont || 'Sin descripción'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="sh-foot">
+                        <div id="${qrId}" style="width:75px; height:75px"></div>
+                        <div style="flex:1; text-align:right">
+                            <span class="sh-label">NÚMERO DE REFERENCIA</span>
+                            <div style="font-size:24px; font-weight:800">${ref}</div>
+                        </div>
+                    </footer>
+                `;
+                document.getElementById('label-container').appendChild(card);
+                new QRCode(document.getElementById(qrId), { text: ref, width: 75, height: 75 });
+            }
+        }
+
+        // --- LÓGICA: INDUSTRIAL ---
+        function addIndustrialLabel() {
+            const name = document.getElementById('iName').value.toUpperCase();
+            const qty = document.getElementById('iQty').value.toUpperCase();
+            const copies = parseInt(document.getElementById('pCopies').value) || 1;
+            if(!name) return;
+
+            for(let i=0; i<copies; i++) {
+                const qrId = "qri_" + Date.now() + "_" + i;
+                const card = document.createElement('div');
+                card.className = 'card style-industrial';
+                card.innerHTML = `
+                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
+                    <div class="ind-header"><span>NICHOLL'S TACTICA</span><span>⬆️</span></div>
+                    <div class="ind-body">
+                        <div class="ind-info">
+                            <span class="sh-label">PRODUCTO</span>
+                            <div style="font-size:32px; font-weight:800; line-height:1">${name}</div>
+                        </div>
+                        <div class="ind-qty-box">
+                            <span class="sh-label">QTY</span>
+                            <div style="font-size:38px; font-weight:800">${qty}</div>
+                        </div>
+                    </div>
+                    <div class="ind-footer">
+                        <div style="font-size:11px">LOGÍSTICA SAGA<br>${new Date().toLocaleDateString()}</div>
+                        <div id="${qrId}"></div>
+                    </div>
+                `;
+                document.getElementById('label-container').appendChild(card);
+                new QRCode(document.getElementById(qrId), { text: name, width: 60, height: 60 });
+            }
+        }
+
+        // --- LÓGICA: PACKING LIST ---
+        function addItemToList() {
+            const item = document.getElementById('lItem').value;
+            const qty = document.getElementById('lQty').value;
+            if(!item || !qty) return;
+            multiItems.push({item, qty});
+            document.getElementById('temp-list-display').innerHTML += `• ${item} (x${qty})<br>`;
+            document.getElementById('lItem').value = ""; document.getElementById('lQty').value = "";
+        }
+
+        function addListLabel() {
+            if(multiItems.length === 0) return;
+            const copies = parseInt(document.getElementById('pCopies').value) || 1;
+            for(let i=0; i<copies; i++) {
+                const qrId = "qrl_" + Date.now() + "_" + i;
+                const card = document.createElement('div');
+                card.className = 'card style-list';
+                let rows = multiItems.map(it => `<tr><td>${it.item}</td><td style="text-align:right">${it.qty}</td></tr>`).join('');
+                card.innerHTML = `
+                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
+                    <div style="background:#000; color:#fff; padding:10px; font-weight:800">LISTA DE CONTENIDO / PACKING LIST</div>
+                    <div style="flex:1; padding:15px; overflow:hidden">
+                        <table class="list-table">
+                            <thead><tr><th>DESCRIPCIÓN</th><th style="text-align:right">CANT</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                    <div style="padding:15px; border-top:1px solid #000; display:flex; justify-content:space-between; align-items:center">
+                         <div style="font-size:10px">SAGA LOGISTICS<br>${new Date().toLocaleDateString()}</div>
+                         <div id="${qrId}"></div>
+                    </div>
+                `;
+                document.getElementById('label-container').appendChild(card);
+                new QRCode(document.getElementById(qrId), { text: "LISTA", width: 55, height: 55 });
+            }
+            multiItems = []; document.getElementById('temp-list-display').innerHTML = "";
         }
     </script>
 </body>
