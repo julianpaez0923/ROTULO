@@ -3,367 +3,590 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAGA | SISTEMA INTEGRAL DE LOGÍSTICA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>SAGA LOGISTICA | COLOMBIA </title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --primary: #000;
-            --accent: #2563eb;
-            --bg-site: #f8fafc;
-            --border: #000;
+            --bg-dark: #020617;
+            --bg-sidebar: #0f172a;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --driver-bg: #111827;
+            --driver-accent: #8b5cf6; /* Color distintivo para transportador */
         }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
-        body { margin: 0; background: var(--bg-site); display: flex; height: 100vh; font-family: 'Inter', sans-serif; color: #1e293b; }
+        body { margin: 0; background: var(--bg-dark); display: flex; height: 100vh; font-family: 'Inter', sans-serif; color: var(--text-main); overflow: hidden; }
 
-        /* --- PANEL LATERAL --- */
+        /* --- PANTALLA DE INICIO (DISEÑO PREMIUM) --- */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: all 0.8s cubic-bezier(0.87, 0, 0.13, 1); padding: 20px; overflow-y: auto;
+        }
+
+        .login-card {
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 40px;
+            width: 100%; max-width: 750px; text-align: center; position: relative;
+            animation: cardEntrance 0.8s ease-out; box-shadow: 0 0 100px rgba(0,0,0,0.5);
+        }
+
+        @keyframes cardEntrance { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+
+        .login-brand { font-family: 'Montserrat', sans-serif; font-size: clamp(32px, 8vw, 60px); color: #fff; margin-bottom: 5px; }
+        .login-brand span { color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
+        
+        .big-search-container { position: relative; margin: 30px 0; display: flex; flex-direction: column; gap: 15px; }
+        .big-input {
+            width: 100%; padding: 25px 30px; font-size: 20px; background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--border); color: white; border-radius: 25px; transition: 0.4s;
+            font-family: 'Roboto Mono', monospace; text-align: center;
+        }
+        .big-input:focus { border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); outline: none; }
+        
+        .big-btn-search {
+            background: var(--accent); color: white; border: none; padding: 20px 50px;
+            border-radius: 25px; cursor: pointer; font-weight: 900; font-size: 18px;
+            transition: 0.3s; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        /* --- DISEÑO DE RESULTADOS DE RASTREO PÚBLICO --- */
+        .track-result-public { margin-top: 30px; text-align: left; display: none; animation: slideUp 0.5s ease-out; }
+        .tracking-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .status-badge { padding: 8px 16px; border-radius: 12px; font-weight: 900; font-size: 12px; text-transform: uppercase; }
+
+        .tracking-stepper { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; padding: 0 20px; }
+        .tracking-stepper::before { content: ''; position: absolute; top: 15px; left: 40px; right: 40px; height: 3px; background: var(--border); z-index: 1; }
+        .step { position: relative; z-index: 2; text-align: center; width: 80px; }
+        .step-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-dark); border: 3px solid var(--border); margin: 0 auto 10px; }
+        .step.active .step-circle { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .step-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .step.active .step-label { color: white; }
+
+        .info-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .info-item label { display: block; font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
+        .info-item span { font-size: 13px; font-weight: 700; color: #fff; }
+
+        /* --- SIDEBAR ADMINISTRATIVO --- */
         aside {
-            width: 400px; background: #fff; border-right: 1px solid #e2e8f0;
+            width: 450px; background: var(--bg-sidebar); border-right: 1px solid var(--border);
             padding: 25px; display: flex; flex-direction: column; overflow-y: auto;
-            box-shadow: 10px 0 15px -5px rgba(0,0,0,0.05); z-index: 100;
+            box-shadow: 10px 0 50px rgba(0,0,0,0.5); z-index: 10;
         }
-        .logo-box { margin-bottom: 25px; }
-        .logo-box h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -1px; }
-        .logo-box span { color: var(--accent); }
 
-        /* Pestañas */
-        .tabs { display: flex; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 10px; margin-bottom: 20px; }
+        .brand { font-family: 'Montserrat', sans-serif; font-size: 22px; color: #fff; margin-bottom: 25px; border-left: 5px solid var(--accent); padding-left: 15px; }
+        .brand span { color: var(--accent); }
+
+        .nav-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
         .tab-btn { 
-            flex: 1; padding: 10px 5px; border: none; border-radius: 7px; cursor: pointer; 
-            font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; transition: 0.2s;
+            padding: 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; 
+            font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); 
+            background: rgba(255,255,255,0.02); transition: 0.3s;
         }
-        .tab-btn.active { background: #fff; color: var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .tab-btn.track-tab.active { background: var(--warning); color: black; }
 
         .form-section { display: none; flex-direction: column; gap: 12px; }
         .form-section.active { display: flex; }
 
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #475569; letter-spacing: 0.5px; }
-        input, textarea, select { 
-            padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; 
-            font-size: 13px; font-family: inherit; transition: all 0.2s;
-        }
-        input:focus { outline: none; border-color: var(--accent); background: #fff; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
+        input, textarea, select { padding: 12px; background: #020617; border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 13px; }
 
-        .btn { padding: 14px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: 0.2s; }
-        .btn-add { background: var(--primary); color: white; }
-        .btn-add:hover { background: #333; }
-        .btn-print { background: #10b981; color: white; margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; }
-
-        /* --- VISTA PREVIA --- */
-        main { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        #label-container { display: grid; gap: 25px; width: 100%; max-width: 900px; }
+        .btn { padding: 14px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-add { background: var(--accent); color: white; }
+        .btn-print { background: var(--success); color: white; font-size: 14px; margin-top: 10px; }
         
-        /* Grillas */
-        .grid-small { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
-        .grid-large { grid-template-columns: 1fr; }
+        .print-options { display: flex; gap: 5px; margin-top: 10px; }
+        .btn-p-opt { flex: 1; padding: 10px; font-size: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; border-radius: 8px; }
+        .btn-p-opt.active { background: var(--success); color: white; border-color: var(--success); }
 
-        .card { 
-            background: #fff; border: 2px solid #000; position: relative; 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden;
-            display: flex; flex-direction: column;
+        /* --- NUEVO ESTILO: GESTION DE SEGUIMIENTO (HUB) --- */
+        .hub-stats { display: flex; gap: 10px; margin-bottom: 15px; }
+        .hub-card { flex: 1; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+        .hub-num { font-size: 18px; font-weight: 900; color: var(--white); }
+        .hub-lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+
+        .timeline-container { position: relative; margin-top: 15px; border-left: 2px solid var(--border); padding-left: 15px; max-height: 200px; overflow-y: auto; }
+        .t-event { position: relative; margin-bottom: 15px; }
+        .t-event::before { content: ''; position: absolute; left: -20px; top: 5px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+        .t-date { font-size: 9px; color: var(--text-muted); }
+        .t-status { font-size: 11px; font-weight: 700; color: #fff; }
+        .t-loc { font-size: 10px; color: var(--accent); }
+
+        /* --- NUEVO ESTILO: INTERFAZ TRANSPORTADOR --- */
+        #carrier-dashboard {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--driver-bg); z-index: 100; display: none; /* Oculto por defecto */
+            flex-direction: column; overflow: hidden;
         }
-        .btn-del { 
-            position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; 
-            border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; z-index: 50;
+        .driver-header { padding: 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .driver-brand { font-family: 'Montserrat'; font-size: 18px; color: white; }
+        .driver-brand span { color: var(--driver-accent); }
+        
+        .driver-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; }
+        
+        .driver-card {
+            background: #1f2937; border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .dc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .dc-id { font-family: 'Roboto Mono'; font-size: 16px; color: var(--warning); font-weight: 700; background: rgba(245, 158, 11, 0.1); padding: 5px 10px; border-radius: 5px; }
+        .dc-dest { font-size: 14px; font-weight: 700; color: white; }
+        .dc-meta { font-size: 12px; color: #9ca3af; }
+
+        .driver-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-driver {
+            padding: 15px; border-radius: 12px; border: none; font-weight: 800; color: white;
+            font-size: 12px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .btn-d-transit { background: #3b82f6; }
+        .btn-d-deliver { background: #10b981; grid-column: span 2; font-size: 14px; }
+        .btn-d-issue { background: #ef4444; }
+        .btn-scan-lg { background: var(--driver-accent); color: white; padding: 20px; border-radius: 15px; border: none; font-size: 16px; font-weight: 900; width: 100%; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); margin-bottom: 20px; cursor: pointer; }
+
+        /* --- DISEÑO DE ETIQUETAS --- */
+        main { flex: 1; padding: 40px; background: #000; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        #label-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 20px; }
+
+        .card-pro { 
+            background: #fff; color: #000; border: 6px solid #000; width: 100%; aspect-ratio: 1.6/1; 
+            display: flex; flex-direction: column; position: relative; page-break-inside: avoid;
+        }
+        .zebra-bar { height: 12px; background: repeating-linear-gradient(45deg, #f59e0b, #f59e0b 10px, #000 10px, #000 20px); border-bottom: 4px solid #000; }
+        .gp-header { display: flex; border-bottom: 6px solid #000; height: 90px; }
+        .gp-logo-area { background: #000; color: #fff; padding: 15px 25px; flex: 1.5; display: flex; flex-direction: column; justify-content: center; }
+        .gp-meta-area { flex: 1; padding: 10px 20px; text-align: right; font-size: 11px; font-weight: 800; border-left: 6px solid #000; line-height: 1.3; }
+        .gp-dest-box { padding: 15px 25px; border-bottom: 6px solid #000; flex: 1; }
+        .gp-dest-name { font-size: 50px; font-weight: 900; line-height: 0.9; }
+        .gp-footer { height: 110px; display: flex; align-items: center; padding: 0 20px; background: #f8fafc; gap: 20px; }
+        .gp-qr { width: 85px; height: 85px; border: 2px solid #000; background: #fff; }
+
+        /* RESPONSIVE MÓVIL */
+        @media (max-width: 900px) {
+            body { flex-direction: column; overflow-y: auto; }
+            aside { width: 100%; height: auto; border-right: none; }
+            .login-card { padding: 25px; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            main { display: none; } /* En móvil admin, ocultamos etiquetas */
         }
 
-        /* --- ESTILO 1: GUÍA DE ENVÍO (MODERNO) --- */
-        .style-shipping { font-family: 'Inter', sans-serif; aspect-ratio: 1.58 / 1; }
-        .sh-head { display: flex; border-bottom: 2px solid #000; height: 60px; }
-        .sh-logo { background: #000; color: #fff; padding: 0 20px; display: flex; align-items: center; font-weight: 800; min-width: 200px; }
-        .sh-meta { flex: 1; padding: 10px; font-size: 10px; display: flex; flex-direction: column; justify-content: center; }
-        .sh-body { display: grid; grid-template-columns: 1fr 1fr; flex: 1; }
-        .sh-col { border-right: 1px solid #000; display: flex; flex-direction: column; }
-        .sh-box { padding: 12px; border-bottom: 1px solid #000; flex: 1; }
-        .sh-box.dest { flex: 2; border-bottom: 2px solid #000; background: #fafafa; }
-        .sh-label { font-size: 9px; font-weight: 700; color: #666; margin-bottom: 3px; display: block; }
-        .sh-val-lg { font-size: 32px; font-weight: 800; color: var(--accent); line-height: 1; }
-        .sh-val-md { font-size: 18px; font-weight: 700; }
-        .sh-foot { height: 90px; display: flex; align-items: center; padding: 0 20px; gap: 20px; }
-
-        /* --- ESTILO 2: INDUSTRIAL --- */
-        .style-industrial { aspect-ratio: 1.6 / 1; font-family: 'Montserrat', sans-serif; }
-        .ind-header { background: #000; color: #fff; padding: 10px 20px; display: flex; justify-content: space-between; font-weight: 800; }
-        .ind-body { flex: 1; display: grid; grid-template-columns: 1fr 120px; border-bottom: 2px solid #000; }
-        .ind-info { padding: 20px; border-right: 2px solid #000; display: flex; flex-direction: column; justify-content: center; }
-        .ind-qty-box { background: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .ind-footer { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; height: 80px; }
-
-        /* --- ESTILO 3: PACKING LIST --- */
-        .style-list { aspect-ratio: 1.6 / 1; font-family: 'Inter', sans-serif; }
-        .list-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .list-table th { text-align: left; font-size: 10px; border-bottom: 1px solid #000; padding: 5px; }
-        .list-table td { font-size: 14px; font-weight: 600; padding: 8px 5px; border-bottom: 1px solid #eee; }
-
-        /* --- CONFIGURACIÓN DE IMPRESIÓN --- */
         @media print {
-            @page { size: Letter; margin: 0; }
-            body { background: #fff; display: block; }
-            aside, .btn-del { display: none !important; }
-            main { padding: 0; display: block; }
-            #label-container { display: grid !important; gap: 0; max-width: none; width: 100%; }
-            
-            /* Dos por hoja (Media página) */
-            .grid-large .card { 
-                height: 13.9cm; /* Mitad exacta de una hoja carta */
-                border: 1px solid #000;
-                page-break-inside: avoid;
-                margin: 0;
-            }
-            .grid-large .sh-val-lg { font-size: 50px; }
-
-            /* Ocho por hoja */
-            .grid-small { grid-template-columns: 1fr 1fr !important; }
-            .grid-small .card { 
-                height: 6.9cm; 
-                margin: 0.1cm;
-                page-break-inside: avoid;
-            }
+            aside, #login-overlay, #carrier-dashboard { display: none !important; }
+            body { background: #fff; display: block; height: auto; }
+            main { padding: 0; background: #fff; display: block; }
+            body.print-x2 #label-container { display: block; }
+            body.print-x2 .card-pro { height: 48vh; margin-bottom: 10px; }
+            body.print-x6 #label-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+            body.print-x6 .card-pro { zoom: 0.6; }
         }
     </style>
 </head>
-<body>
+<body class="print-x1">
 
-    <aside>
-        <div class="logo-box">
-            <h1>NICHOLL'S<span>.</span>PRO</h1>
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="login-brand">SAGA <span>HUB</span></div>
+            <p style="color:var(--text-muted); font-size:11px; letter-spacing:3px; font-weight:800">SISTEMA LOGÍSTICO COLOMBIA</p>
+            
+            <div class="big-search-container">
+                <input type="text" id="publicTrackId" class="big-input" placeholder="INTRODUZCA GUÍA (SAGA-XXXXX)">
+                <button class="big-btn-search" onclick="checkPublicTracking()">RASTREAR AHORA</button>
+            </div>
+            
+            <div id="public-track-res" class="track-result-public"></div>
+
+            <div style="margin-top:40px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px">
+                <p style="cursor:pointer; font-size:11px; color:var(--text-muted); font-weight:800" onclick="document.getElementById('admin-p').style.display='block'">🔒 ACCESO CORPORATIVO</p>
+                <div id="admin-p" style="display:none; margin-top:15px">
+                    <p style="font-size:10px; color:#aaa; margin-bottom:5px">FUSAGASUGA | COLOMBIA</p>
+                    <input type="password" id="adminPass" style="width:200px; padding:12px; text-align:center; border-radius:12px" placeholder="PIN DE ACCESO">
+                    <button class="btn btn-add" style="padding:10px 20px; margin-left:5px" onclick="doLogin()">ENTRAR</button>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <aside id="admin-sidebar">
+        <div class="brand">SAGA <span>LOGISTICA</span> PRO</div>
         
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('shipping')">Guía Envíos</button>
-            <button class="tab-btn" onclick="switchTab('industrial')">Industrial</button>
-            <button class="tab-btn" onclick="switchTab('list')">Packing List</button>
+        <div class="nav-grid">
+            <button class="tab-btn active" onclick="switchTab('guia', event)">Envíos</button>
+            <button class="tab-btn" onclick="switchTab('ind', event)">Industrial</button>
+            <button class="tab-btn" onclick="switchTab('list', event)">Packing</button>
+            <button class="tab-btn" onclick="switchTab('hist', event)">Historial</button>
+            <button class="tab-btn track-tab" style="grid-column: span 2; border-color:var(--warning); color:var(--warning)" onclick="switchTab('track', event)">📡 HUB DE CONTROL</button>
         </div>
 
-        <div id="form-shipping" class="form-section active">
-            <div class="form-group">
-                <label>Destinatario (Entrega a:)</label>
-                <input type="text" id="gDestino" placeholder="Ej: DON ELBER">
-            </div>
+        <div id="form-guia" class="form-section active">
+            <div class="form-group"><label>Producto</label><input type="text" id="gDest" placeholder="Nombre del Producto"></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                <div class="form-group">
-                    <label>Peso</label>
-                    <input type="text" id="gPeso" placeholder="Ej: 394 KG">
-                </div>
-                <div class="form-group">
-                    <label>Bultos</label>
-                    <input type="text" id="gBultos" placeholder="Ej: 27 CAJAS">
-                </div>
+                <div class="form-group"><label>Peso</label><input type="text" id="gPeso" placeholder="0 KG"></div>
+                <div class="form-group"><label>Bultos</label><input type="text" id="gBultos" placeholder="1 / 1"></div>
             </div>
-            <div class="form-group">
-                <label>Contenido Detallado</label>
-                <textarea id="gContenido" rows="3" placeholder="Descripción de los artículos..."></textarea>
+            <div class="form-group"><label>Destinatario</label><textarea id="gCont" rows="2" placeholder="Nombre Cliente / Info"></textarea></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
+                <div class="form-group"><label>ID Referencia</label><input type="text" id="gRef" placeholder="Auto"></div>
+                <div class="form-group"><label>Etiquetas</label><input type="number" id="gCopies" value="1" min="1"></div>
             </div>
-            <div class="form-group">
-                <label>ID de Referencia</label>
-                <input type="text" id="gRef" placeholder="#ID-78735">
-            </div>
-            <button class="btn btn-add" style="background:var(--accent)" onclick="addShippingLabel()">Añadir Guía Pro</button>
+            <button class="btn btn-add" onclick="processRegistry('ENVIO')">Crear Envío</button>
         </div>
 
-        <div id="form-industrial" class="form-section">
-            <div class="form-group">
-                <label>Nombre del Producto</label>
-                <input type="text" id="iName" placeholder="CABLE HDMI 4K">
-            </div>
-            <div class="form-group">
-                <label>Cantidad (QTY)</label>
-                <input type="text" id="iQty" placeholder="100 UNIDADES">
-            </div>
-            <button class="btn btn-add" onclick="addIndustrialLabel()">Añadir Rótulo Simple</button>
+        <div id="form-ind" class="form-section">
+            <div class="form-group"><label>Producto Industrial</label><input type="text" id="iName"></div>
+            <div class="form-group"><label>Cantidad / Stock</label><input type="text" id="iQty"></div>
+            <button class="btn btn-add" onclick="processRegistry('INDUSTRIAL')">Registrar Item</button>
         </div>
 
         <div id="form-list" class="form-section">
-            <div style="background:#f1f5f9; padding:10px; border-radius:8px; display:flex; flex-direction:column; gap:8px;">
-                <div class="form-group">
-                    <label>Ítem</label>
-                    <input type="text" id="lItem">
-                </div>
-                <div class="form-group">
-                    <label>Cant.</label>
-                    <input type="text" id="lQty">
-                </div>
-                <button class="btn" style="background:#64748b; color:white" onclick="addItemToList()">+ Agregar a lista</button>
+            <div style="display:flex; gap:5px"><input type="text" id="lItem" style="flex:2" placeholder="Item"><input type="text" id="lQty" style="flex:1" placeholder="Cant"></div>
+            <button class="btn" style="background:var(--border); padding:8px" onclick="addToPacking()">+ Añadir</button>
+            <div id="temp-packing-list" style="font-size:11px; color:var(--warning); font-family:monospace"></div>
+            <button class="btn btn-add" onclick="processRegistry('PACKING')">Generar Packing List</button>
+        </div>
+
+        <div id="form-hist" class="form-section">
+            <div id="history-container" style="display:flex; flex-direction:column; gap:8px"></div>
+        </div>
+
+        <div id="form-track" class="form-section">
+            <div class="hub-stats">
+                <div class="hub-card"><div class="hub-num" id="stat-active">0</div><div class="hub-lbl">Activos</div></div>
+                <div class="hub-card"><div class="hub-num" id="stat-delivered" style="color:var(--success)">0</div><div class="hub-lbl">Entregados</div></div>
             </div>
-            <div id="temp-list-display" style="font-size:11px; margin-top:10px; color:#64748b"></div>
-            <button class="btn btn-add" style="background:#10b981" onclick="addListLabel()">Generar Packing List</button>
+
+            <div style="display:flex; gap:5px">
+                <input type="text" id="searchId" style="flex:1" placeholder="Buscar ID (SAGA-...)">
+                <button class="btn" style="padding:10px; width:40px" onclick="runTracking()">🔍</button>
+            </div>
+            
+            <div id="tracking-admin-res" style="margin-top:15px; display:none">
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="font-weight:900; color:var(--accent)" id="hub-id">ID</span>
+                        <span class="status-badge" style="background:#fff; color:#000" id="hub-status">STATUS</span>
+                    </div>
+                    <div style="margin-top:10px; padding-bottom:10px; border-bottom:1px solid var(--border)">
+                        <label>Actualizar Estado</label>
+                        <select id="admStatus" style="width:100%; margin-bottom:5px">
+                            <option>EN TRANSITO</option>
+                            <option>EN BODEGA DESTINO</option>
+                            <option>NOVEDAD / RETENIDO</option>
+                            <option>ENTREGADO</option>
+                        </select>
+                        <input type="text" id="admLoc" placeholder="Ubicación / Notas" style="width:100%; margin-bottom:5px">
+                        <button class="btn btn-add" style="width:100%; font-size:11px" onclick="updateStatusFromHub()">GUARDAR MOVIMIENTO</button>
+                    </div>
+                    <div class="timeline-container" id="hub-timeline">
+                        </div>
+                </div>
+            </div>
         </div>
 
-        <hr style="width:100%; border:0; border-top:1px solid #e2e8f0; margin:20px 0;">
-
-        <div class="form-group">
-            <label>Copias a Generar</label>
-            <input type="number" id="pCopies" value="1" min="1">
+        <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px">
+            <label>Modo de Impresión</label>
+            <div class="print-options">
+                <button class="btn-p-opt active" onclick="setPrintMode(1, this)">1 x Hoja</button>
+                <button class="btn-p-opt" onclick="setPrintMode(2, this)">2 x Hoja</button>
+                <button class="btn-p-opt" onclick="setPrintMode(6, this)">6 x Hoja</button>
+            </div>
+            <button class="btn btn-print" style="width:100%" onclick="window.print()">🖨️ IMPRIMIR COLA</button>
+            <button class="btn" style="width:100%; margin-top:5px; background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:10px" onclick="location.reload()">CERRAR SESIÓN</button>
         </div>
-
-        <div class="form-group" style="margin-top:10px">
-            <label>Formato de Salida</label>
-            <select id="pSize" onchange="updateGrid()">
-                <option value="grid-large">GRANDE (2 por hoja - Media Página)</option>
-                <option value="grid-small">PEQUEÑO (8 por hoja - Cuarto de Página)</option>
-            </select>
-        </div>
-
-        <button class="btn btn-print" onclick="window.print()">
-            🖨️ IMPRIMIR AHORA
-        </button>
-        
-        <button onclick="document.getElementById('label-container').innerHTML=''" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:10px; margin-top:15px; text-decoration:underline;">VACIAR TODO</button>
     </aside>
 
-    <main>
-        <div id="label-container" class="grid-large"></div>
-    </main>
+    <div id="carrier-dashboard">
+        <div class="driver-header">
+            <div class="driver-brand">ZONA <span>DE CONDUCTOR</span></div>
+            <button style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:5px 10px; border-radius:5px" onclick="location.reload()">SALIR</button>
+        </div>
+        <div class="driver-content">
+            <div style="text-align:center">
+                <h2 style="margin:0; font-size:24px">Mi Ruta de Hoy</h2>
+                <p style="color:var(--text-muted); font-size:12px">Gestione las entregas en tiempo real</p>
+            </div>
+
+            <button class="btn-scan-lg" onclick="document.getElementById('driver-search').focus()">
+                📷 ESCANEAR / BUSCAR GUÍA
+            </button>
+            
+            <input type="text" id="driver-search" placeholder="Escriba # Guía y Enter..." 
+                   style="width:100%; padding:15px; font-size:18px; text-align:center; margin-bottom:20px; background:#374151; border:none"
+                   onchange="driverSearch(this.value)">
+
+            <div id="driver-list" style="display:flex; flex-direction:column; gap:15px">
+                </div>
+        </div>
+    </div>
+
+    <main><div id="label-container"></div></main>
 
     <script>
-        let multiItems = [];
+        let db = JSON.parse(localStorage.getItem('saga_pro_db')) || [];
+        let packingBuffer = [];
+        let currentUserRole = '';
 
-        function switchTab(type) {
+        // --- SISTEMA DE LOGIN MEJORADO ---
+        function doLogin() {
+            const pass = document.getElementById('adminPass').value;
+            const overlay = document.getElementById('login-overlay');
+            
+            if(pass === 'JULIAN09') {
+                currentUserRole = 'ADMIN';
+                overlay.style.transform = 'translateY(-100%)';
+                updateStats(); // Cargar estadísticas iniciales
+            } else if (pass === 'C1') {
+                currentUserRole = 'DRIVER';
+                overlay.style.transform = 'translateY(-100%)';
+                document.getElementById('admin-sidebar').style.display = 'none'; // Ocultar panel admin
+                document.querySelector('main').style.display = 'none'; // Ocultar area de etiquetas
+                document.getElementById('carrier-dashboard').style.display = 'flex'; // Mostrar panel driver
+                renderDriverRoute();
+            } else { 
+                alert('Credencial Inválida'); 
+            }
+        }
+
+        // --- FUNCIONES PÚBLICAS Y ADMIN ---
+        function checkPublicTracking() {
+            const pid = document.getElementById('publicTrackId').value.toUpperCase().trim();
+            const resBox = document.getElementById('public-track-res');
+            const item = db.find(i => i.id === pid);
+
+            if(!item) {
+                resBox.style.display = 'block';
+                resBox.innerHTML = `<div style="padding:20px; color:var(--danger)">❌ GUÍA NO ENCONTRADA</div>`;
+                return;
+            }
+
+            resBox.style.display = 'block';
+            const isTransit = item.status.includes('TRANSITO') || item.status.includes('REPARTO');
+            const isDelivered = item.status.includes('ENTREGADO');
+
+            resBox.innerHTML = `
+                <div class="tracking-header">
+                    <div><span style="font-size:9px; color:var(--text-muted)">GUÍA</span><div style="font-size:22px; font-weight:900; color:var(--accent)">${item.id}</div></div>
+                    <div class="status-badge" style="background:${isDelivered ? 'var(--success)' : 'var(--warning)'}; color:#000">${item.status}</div>
+                </div>
+                <div class="tracking-stepper">
+                    <div class="step active"><div class="step-circle"></div><div class="step-label">Recibido</div></div>
+                    <div class="step ${isTransit || isDelivered ? 'active' : ''}"><div class="step-circle"></div><div class="step-label">Ruta</div></div>
+                    <div class="step ${isDelivered ? 'active' : ''}"><div class="step-circle"></div><div class="step-label">Entregado</div></div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item"><label>Producto</label><span>${item.title}</span></div>
+                    <div class="info-item"><label>Destinatario</label><span>${item.info}</span></div>
+                    <div class="info-item"><label>Ubicación Actual</label><span>${item.loc}</span></div>
+                    <div class="info-item"><label>Última Actualización</label><span>${item.date}</span></div>
+                </div>`;
+        }
+
+        function setPrintMode(n, btn) {
+            document.querySelectorAll('.btn-p-opt').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.body.className = n === 1 ? 'print-x1' : 'print-x' + n;
+        }
+
+        function switchTab(type, e) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-            event.target.classList.add('active');
+            if(e) e.target.classList.add('active');
             document.getElementById('form-' + type).classList.add('active');
+            if(type === 'hist') updateHistory();
+            if(type === 'track') updateStats();
         }
 
-        function updateGrid() {
-            document.getElementById('label-container').className = document.getElementById('pSize').value;
-        }
-
-        // --- LÓGICA: GUÍA DE ENVÍO PRO ---
-        function addShippingLabel() {
-            const dest = document.getElementById('gDestino').value.toUpperCase();
-            const peso = document.getElementById('gPeso').value.toUpperCase();
-            const bultos = document.getElementById('gBultos').value.toUpperCase();
-            const cont = document.getElementById('gContenido').value;
-            const ref = document.getElementById('gRef').value.toUpperCase() || "#GUIA-" + Date.now().toString().slice(-5);
-            const copies = parseInt(document.getElementById('pCopies').value) || 1;
-
-            if(!dest) return alert("Ingresa el destino");
-
-            for(let i=0; i<copies; i++) {
-                const qrId = "qrg_" + Date.now() + "_" + i;
-                const card = document.createElement('div');
-                card.className = 'card style-shipping';
-                card.innerHTML = `
-                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
-                    <header class="sh-head">
-                        <div class="sh-logo">NICHOLL'S TACTICA S.A.S</div>
-                        <div class="sh-meta">
-                            <b>GUÍA DE TRANSPORTE NICHOLL´S - SAGA</b>
-                            <span>FECHA: ${new Date().toLocaleDateString()} | ALMACÉN CENTRAL</span>
-                        </div>
-                    </header>
-                    <div class="sh-body">
-                        <div class="sh-col">
-                            <div class="sh-box">
-                                <span class="sh-label">REMITENTE:</span>
-                                <span class="sh-val-md">NICHOLL'S TACTICA S.A.S</span>
-                            </div>
-                            <div class="sh-box">
-                                <span class="sh-label">PESO REGISTRADO:</span>
-                                <span class="sh-val-md">${peso || '---'}</span>
-                            </div>
-                            <div class="sh-box">
-                                <span class="sh-label">TOTAL UNIDADES:</span>
-                                <span class="sh-val-md">${bultos || '---'}</span>
-                            </div>
-                        </div>
-                        <div class="sh-col">
-                            <div class="sh-box dest">
-                                <span class="sh-label">DESTINATARIO / ENTREGA:</span>
-                                <span class="sh-val-lg">${dest}</span>
-                            </div>
-                            <div class="sh-box">
-                                <span class="sh-label">CONTENIDO:</span>
-                                <div style="font-size:12px; line-height:1.2">${cont || 'Sin descripción'}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <footer class="sh-foot">
-                        <div id="${qrId}" style="width:75px; height:75px"></div>
-                        <div style="flex:1; text-align:right">
-                            <span class="sh-label">NÚMERO DE REFERENCIA</span>
-                            <div style="font-size:24px; font-weight:800">${ref}</div>
-                        </div>
-                    </footer>
-                `;
-                document.getElementById('label-container').appendChild(card);
-                new QRCode(document.getElementById(qrId), { text: ref, width: 75, height: 75 });
-            }
-        }
-
-        // --- LÓGICA: INDUSTRIAL ---
-        function addIndustrialLabel() {
-            const name = document.getElementById('iName').value.toUpperCase();
-            const qty = document.getElementById('iQty').value.toUpperCase();
-            const copies = parseInt(document.getElementById('pCopies').value) || 1;
-            if(!name) return;
-
-            for(let i=0; i<copies; i++) {
-                const qrId = "qri_" + Date.now() + "_" + i;
-                const card = document.createElement('div');
-                card.className = 'card style-industrial';
-                card.innerHTML = `
-                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
-                    <div class="ind-header"><span>NICHOLL'S TACTICA</span><span>⬆️</span></div>
-                    <div class="ind-body">
-                        <div class="ind-info">
-                            <span class="sh-label">PRODUCTO</span>
-                            <div style="font-size:32px; font-weight:800; line-height:1">${name}</div>
-                        </div>
-                        <div class="ind-qty-box">
-                            <span class="sh-label">QTY</span>
-                            <div style="font-size:38px; font-weight:800">${qty}</div>
-                        </div>
-                    </div>
-                    <div class="ind-footer">
-                        <div style="font-size:11px">LOGÍSTICA SAGA<br>${new Date().toLocaleDateString()}</div>
-                        <div id="${qrId}"></div>
-                    </div>
-                `;
-                document.getElementById('label-container').appendChild(card);
-                new QRCode(document.getElementById(qrId), { text: name, width: 60, height: 60 });
-            }
-        }
-
-        // --- LÓGICA: PACKING LIST ---
-        function addItemToList() {
+        function addToPacking() {
             const item = document.getElementById('lItem').value;
             const qty = document.getElementById('lQty').value;
             if(!item || !qty) return;
-            multiItems.push({item, qty});
-            document.getElementById('temp-list-display').innerHTML += `• ${item} (x${qty})<br>`;
+            packingBuffer.push({item, qty});
+            document.getElementById('temp-packing-list').innerHTML += `• ${item} (${qty})<br>`;
             document.getElementById('lItem').value = ""; document.getElementById('lQty').value = "";
         }
 
-        function addListLabel() {
-            if(multiItems.length === 0) return;
-            const copies = parseInt(document.getElementById('pCopies').value) || 1;
-            for(let i=0; i<copies; i++) {
-                const qrId = "qrl_" + Date.now() + "_" + i;
-                const card = document.createElement('div');
-                card.className = 'card style-list';
-                let rows = multiItems.map(it => `<tr><td>${it.item}</td><td style="text-align:right">${it.qty}</td></tr>`).join('');
-                card.innerHTML = `
-                    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
-                    <div style="background:#000; color:#fff; padding:10px; font-weight:800">LISTA DE CONTENIDO / PACKING LIST</div>
-                    <div style="flex:1; padding:15px; overflow:hidden">
-                        <table class="list-table">
-                            <thead><tr><th>DESCRIPCIÓN</th><th style="text-align:right">CANT</th></tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
-                    <div style="padding:15px; border-top:1px solid #000; display:flex; justify-content:space-between; align-items:center">
-                         <div style="font-size:10px">SAGA LOGISTICS<br>${new Date().toLocaleDateString()}</div>
-                         <div id="${qrId}"></div>
-                    </div>
-                `;
-                document.getElementById('label-container').appendChild(card);
-                new QRCode(document.getElementById(qrId), { text: "LISTA", width: 55, height: 55 });
+        function processRegistry(type) {
+            const id = document.getElementById('gRef')?.value.toUpperCase() || "SAGA-" + Math.floor(10000 + Math.random() * 90000);
+            
+            // Creamos estructura compatible con historial
+            let entry = { 
+                id, type, date: new Date().toLocaleString(), status: 'BODEGA ORIGEN', loc: 'ZONA DESPACHO',
+                title: (type === 'INDUSTRIAL' ? document.getElementById('iName').value : document.getElementById('gDest').value).toUpperCase(),
+                v1: (type === 'INDUSTRIAL' ? 'STOCK' : document.getElementById('gPeso').value) || '---',
+                v2: (type === 'INDUSTRIAL' ? document.getElementById('iQty').value : document.getElementById('gBultos').value) || '---',
+                info: document.getElementById('gCont')?.value.toUpperCase() || 'STOCK INTERNO',
+                events: [] // Nuevo array para timeline
+            };
+
+            // Evento inicial
+            entry.events.push({ status: 'BODEGA ORIGEN', loc: 'ZONA DESPACHO', date: new Date().toLocaleString(), user: 'ADMIN' });
+
+            if(type === 'PACKING') {
+                entry.items = [...packingBuffer]; entry.title = "PACKING LIST"; entry.v1 = "ITEMS"; entry.v2 = packingBuffer.length;
+                packingBuffer = []; document.getElementById('temp-packing-list').innerHTML = "";
             }
-            multiItems = []; document.getElementById('temp-list-display').innerHTML = "";
+
+            db.unshift(entry);
+            saveDB();
+            
+            const copies = type === 'ENVIO' ? parseInt(document.getElementById('gCopies').value) || 1 : 1;
+            for(let i=0; i<copies; i++) renderLabel(entry);
+            alert("Registrado: " + id);
+            updateStats();
+        }
+
+        function renderLabel(data) {
+            const card = document.createElement('div');
+            card.className = 'card-pro';
+            const qrid = "qr_" + Math.random().toString(16).slice(2);
+            
+            let content = data.type === 'PACKING' ? 
+                `<div style="padding:15px; flex:1"><table>${data.items.map(i=>`<tr><td>${i.item}</td><td align="right"><b>${i.qty}</b></td></tr>`).join('')}</table></div>` :
+                `<div class="gp-dest-box"><span style="font-size:9px; font-weight:800; color:#666">PRODUCTO / ITEM</span><div class="gp-dest-name">${data.title}</div></div>
+                 <div style="display:flex; border-bottom:6px solid #000"><div style="flex:1; padding:15px; border-right:6px solid #000"><b>PESO:</b> ${data.v1}</div><div style="flex:1; padding:15px"><b>BULTOS:</b> ${data.v2}</div></div>`;
+
+            card.innerHTML = `<button style="position:absolute; top:5px; right:5px" onclick="this.parentElement.remove()">X</button>
+                <div class="zebra-bar"></div>
+                <div class="gp-header"><div class="gp-logo-area">NICHOLL'S TACTICA S.A.S</div><div class="gp-meta">${data.id}<br>${data.date}</div></div>
+                ${content}
+                <div class="gp-footer"><div id="${qrid}" class="gp-qr"></div><div style="flex:1; text-align:right"><b>DESTINATARIO:</b><br>${data.info}<div style="font-size:30px; font-weight:900">${data.id}</div></div></div>`;
+            
+            document.getElementById('label-container').prepend(card);
+            setTimeout(() => new QRCode(document.getElementById(qrid), { text: data.id, width: 85, height: 85 }), 50);
+        }
+
+        // --- NUEVA LÓGICA DE HUB DE CONTROL (ADMIN) ---
+        function runTracking() {
+            const id = document.getElementById('searchId').value.toUpperCase().trim();
+            const item = db.find(i => i.id === id);
+            if(!item) return alert("Guía no encontrada");
+            
+            document.getElementById('tracking-admin-res').style.display = 'block';
+            document.getElementById('hub-id').innerText = item.id;
+            document.getElementById('hub-status').innerText = item.status;
+            
+            renderTimeline(item);
+        }
+
+        function renderTimeline(item) {
+            const container = document.getElementById('hub-timeline');
+            // Compatibilidad hacia atrás si no tiene eventos
+            const events = item.events || [{status: item.status, loc: item.loc, date: item.date}];
+            
+            container.innerHTML = events.slice().reverse().map(e => `
+                <div class="t-event">
+                    <div class="t-status">${e.status}</div>
+                    <div class="t-loc">${e.loc}</div>
+                    <div class="t-date">${e.date} (${e.user || 'SISTEMA'})</div>
+                </div>
+            `).join('');
+        }
+
+        function updateStatusFromHub() {
+            const id = document.getElementById('hub-id').innerText;
+            const newStatus = document.getElementById('admStatus').value;
+            const newLoc = document.getElementById('admLoc').value || 'ACTUALIZACIÓN HUB';
+            
+            addEventToItem(id, newStatus, newLoc, 'ADMIN');
+            runTracking(); // Refrescar vista
+            updateStats();
+        }
+
+        function updateStats() {
+            const active = db.filter(i => !i.status.includes('ENTREGADO')).length;
+            const delivered = db.filter(i => i.status.includes('ENTREGADO')).length;
+            document.getElementById('stat-active').innerText = active;
+            document.getElementById('stat-delivered').innerText = delivered;
+        }
+
+        // --- LÓGICA DE TRANSPORTADOR (DRIVER) ---
+        function renderDriverRoute() {
+            const list = document.getElementById('driver-list');
+            // Filtramos solo paquetes activos para el conductor
+            const routeItems = db.filter(i => !i.status.includes('ENTREGADO'));
+            
+            if(routeItems.length === 0) {
+                list.innerHTML = `<div style="color:white; text-align:center; padding:20px">✅ No hay entregas pendientes</div>`;
+                return;
+            }
+
+            list.innerHTML = routeItems.map(item => `
+                <div class="driver-card">
+                    <div class="dc-top">
+                        <div class="dc-id">${item.id}</div>
+                        <div style="font-size:10px; color:#aaa">${item.status}</div>
+                    </div>
+                    <div class="dc-dest">${item.info}</div>
+                    <div class="dc-meta">${item.title} | ${item.loc}</div>
+                    <div class="driver-actions">
+                        <button class="btn-driver btn-d-transit" onclick="driverUpdate('${item.id}', 'EN REPARTO', 'RUTA')">🚚 En Ruta</button>
+                        <button class="btn-driver btn-d-issue" onclick="driverUpdate('${item.id}', 'NOVEDAD', 'INTENTO FALLIDO')">⚠️ Novedad</button>
+                        <button class="btn-driver btn-d-deliver" onclick="driverUpdate('${item.id}', 'ENTREGADO', 'RECIBIDO CONFORME')">✅ CONFIRMAR ENTREGA</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function driverSearch(val) {
+            const id = val.toUpperCase().trim();
+            const item = db.find(i => i.id === id);
+            if(item) {
+                // Filtramos la vista para mostrar solo este item
+                const list = document.getElementById('driver-list');
+                // Reutilizamos el render pero forzamos el html solo de este item
+                // Para simplificar, simplemente recargamos la ruta y hacemos scroll o alertamos
+                alert(`Paquete ${id} encontrado. Estado: ${item.status}`);
+            } else {
+                alert("Paquete no asignado o no existe");
+            }
+            document.getElementById('driver-search').value = '';
+        }
+
+        function driverUpdate(id, status, loc) {
+            if(!confirm(`¿Cambiar estado de ${id} a ${status}?`)) return;
+            addEventToItem(id, status, loc, 'CONDUCTOR');
+            renderDriverRoute(); // Recargar lista
+        }
+
+        // --- UTILIDADES GLOBALES ---
+        function addEventToItem(id, status, loc, user) {
+            const item = db.find(i => i.id === id);
+            if(!item) return;
+
+            item.status = status;
+            item.loc = loc;
+            item.date = new Date().toLocaleString();
+            
+            if(!item.events) item.events = [];
+            item.events.push({
+                status: status,
+                loc: loc,
+                date: new Date().toLocaleString(),
+                user: user
+            });
+
+            saveDB();
+        }
+
+        function saveDB() {
+            localStorage.setItem('saga_pro_db', JSON.stringify(db));
+        }
+
+        function updateHistory() {
+            document.getElementById('history-container').innerHTML = db.slice(0,10).map(i=>`<div style="font-size:11px; padding:10px; background:rgba(255,255,255,0.05); border-radius:5px"><b>${i.id}</b> - ${i.title}</div>`).join('');
         }
     </script>
 </body>
