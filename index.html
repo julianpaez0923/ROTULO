@@ -1,197 +1,228 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAGA LOGISTICA | COLOMBIA </title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    <title>SAGA LOGISTICA | COLOMBIA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-dark: #020617;
-            --bg-sidebar: #0f172a;
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
             --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.4);
-            --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --border: #1e293b;
+            --accent-dark: #1d4ed8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --driver-bg: #111827;
-            --driver-accent: #8b5cf6; /* Color distintivo para transportador */
+            --driver: #8b5cf6;
         }
 
-        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; outline: none; }
         body { margin: 0; background: var(--bg-dark); display: flex; height: 100vh; font-family: 'Inter', sans-serif; color: var(--text-main); overflow: hidden; }
 
-        /* --- PANTALLA DE INICIO (DISEÑO PREMIUM) --- */
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* --- LOGIN & PUBLIC TRACKING --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
+            background: radial-gradient(circle at top right, #1e1b4b, #020617);
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: all 0.8s cubic-bezier(0.87, 0, 0.13, 1); padding: 20px; overflow-y: auto;
+            transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 20px;
         }
 
         .login-card {
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 40px;
-            width: 100%; max-width: 750px; text-align: center; position: relative;
-            animation: cardEntrance 0.8s ease-out; box-shadow: 0 0 100px rgba(0,0,0,0.5);
+            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1); padding: 50px; border-radius: 30px;
+            width: 100%; max-width: 700px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes cardEntrance { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-
-        .login-brand { font-family: 'Montserrat', sans-serif; font-size: clamp(32px, 8vw, 60px); color: #fff; margin-bottom: 5px; }
-        .login-brand span { color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
-        
-        .big-search-container { position: relative; margin: 30px 0; display: flex; flex-direction: column; gap: 15px; }
+        .big-search-container { position: relative; margin: 40px 0; }
         .big-input {
-            width: 100%; padding: 25px 30px; font-size: 20px; background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--border); color: white; border-radius: 25px; transition: 0.4s;
-            font-family: 'Roboto Mono', monospace; text-align: center;
+            width: 100%; padding: 20px 25px; font-size: 18px; background: rgba(15, 23, 42, 0.8);
+            border: 2px solid var(--border); color: white; border-radius: 15px; transition: 0.3s;
+            font-family: 'Roboto Mono', monospace; text-align: center; letter-spacing: 1px;
         }
-        .big-input:focus { border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); outline: none; }
+        .big-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
         
         .big-btn-search {
-            background: var(--accent); color: white; border: none; padding: 20px 50px;
-            border-radius: 25px; cursor: pointer; font-weight: 900; font-size: 18px;
-            transition: 0.3s; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark)); 
+            color: white; border: none; padding: 18px 40px; margin-top: 15px;
+            border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 16px;
+            transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        /* --- DISEÑO DE RESULTADOS DE RASTREO PÚBLICO --- */
-        .track-result-public { margin-top: 30px; text-align: left; display: none; animation: slideUp 0.5s ease-out; }
-        .tracking-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .status-badge { padding: 8px 16px; border-radius: 12px; font-weight: 900; font-size: 12px; text-transform: uppercase; }
-
-        .tracking-stepper { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; padding: 0 20px; }
-        .tracking-stepper::before { content: ''; position: absolute; top: 15px; left: 40px; right: 40px; height: 3px; background: var(--border); z-index: 1; }
-        .step { position: relative; z-index: 2; text-align: center; width: 80px; }
-        .step-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-dark); border: 3px solid var(--border); margin: 0 auto 10px; }
-        .step.active .step-circle { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-        .step-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
-        .step.active .step-label { color: white; }
-
-        .info-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 25px;
-            border: 1px solid rgba(255,255,255,0.05);
+        /* --- RESULTADOS --- */
+        .track-result-modern {
+            margin-top: 30px; background: #0f172a; border-radius: 20px; overflow: hidden;
+            border: 1px solid var(--border); text-align: left; display: none; animation: slideIn 0.4s ease;
         }
-        .info-item label { display: block; font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
-        .info-item span { font-size: 13px; font-weight: 700; color: #fff; }
+        .tr-header { background: var(--bg-panel); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .tr-body { padding: 30px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+        .tr-status-big { font-size: 14px; font-weight: 900; padding: 6px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .status-ok { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .status-warn { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .modern-timeline { position: relative; padding-left: 20px; border-left: 2px solid var(--border); margin-top: 10px; }
+        .mt-item { position: relative; margin-bottom: 25px; }
+        .mt-dot { position: absolute; left: -26px; top: 0; width: 14px; height: 14px; background: var(--bg-dark); border: 2px solid var(--text-muted); border-radius: 50%; }
+        .mt-item.active .mt-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .mt-date { font-size: 11px; color: var(--text-muted); font-family: 'Roboto Mono'; margin-bottom: 2px; }
+        .mt-status { font-weight: 700; color: #fff; font-size: 14px; }
+        .mt-loc { font-size: 12px; color: var(--accent); }
 
-        /* --- SIDEBAR ADMINISTRATIVO --- */
+        /* --- MENU SIDEBAR --- */
         aside {
-            width: 450px; background: var(--bg-sidebar); border-right: 1px solid var(--border);
-            padding: 25px; display: flex; flex-direction: column; overflow-y: auto;
-            box-shadow: 10px 0 50px rgba(0,0,0,0.5); z-index: 10;
+            width: 320px; background: var(--bg-panel); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; z-index: 10; height: 100vh;
         }
-
-        .brand { font-family: 'Montserrat', sans-serif; font-size: 22px; color: #fff; margin-bottom: 25px; border-left: 5px solid var(--accent); padding-left: 15px; }
+        .aside-header { padding: 30px 25px; border-bottom: 1px solid var(--border); }
+        .brand { font-family: 'Montserrat', sans-serif; font-size: 22px; color: #fff; letter-spacing: -0.5px; }
         .brand span { color: var(--accent); }
-
-        .nav-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
-        .tab-btn { 
-            padding: 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; 
-            font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); 
-            background: rgba(255,255,255,0.02); transition: 0.3s;
+        
+        .menu-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
+        
+        .menu-label {
+            font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);
+            margin: 20px 0 10px 10px; letter-spacing: 1px;
         }
-        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .tab-btn.track-tab.active { background: var(--warning); color: black; }
 
-        .form-section { display: none; flex-direction: column; gap: 12px; }
+        .nav-btn {
+            width: 100%; text-align: left; padding: 14px 15px; border-radius: 10px;
+            background: transparent; border: 1px solid transparent; color: var(--text-muted);
+            font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.03); color: white; }
+        .nav-btn.active { background: rgba(59, 130, 246, 0.1); color: var(--accent); border-color: rgba(59, 130, 246, 0.2); font-weight: 700; }
+        .nav-btn.logout { color: var(--danger); margin-top: auto; }
+        .nav-btn.logout:hover { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
+
+        .aside-footer { padding: 20px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.1); }
+        .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .avatar { width: 35px; height: 35px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+
+        /* --- CONTENT AREA --- */
+        .aside-content { flex: 1; padding: 0; background: var(--bg-dark); position: relative; overflow: hidden; }
+        .panel-scroll { height: 100%; overflow-y: auto; padding: 30px; }
+        
+        .form-section { display: none; flex-direction: column; gap: 15px; animation: fadeIn 0.3s; max-width: 800px; margin: 0 auto; }
         .form-section.active { display: flex; }
+        .section-title { font-size: 24px; font-weight: 800; color: white; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
 
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-        input, textarea, select { padding: 12px; background: #020617; border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 13px; }
-
-        .btn { padding: 14px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-add { background: var(--accent); color: white; }
-        .btn-print { background: var(--success); color: white; font-size: 14px; margin-top: 10px; }
-        
-        .print-options { display: flex; gap: 5px; margin-top: 10px; }
-        .btn-p-opt { flex: 1; padding: 10px; font-size: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; border-radius: 8px; }
-        .btn-p-opt.active { background: var(--success); color: white; border-color: var(--success); }
-
-        /* --- NUEVO ESTILO: GESTION DE SEGUIMIENTO (HUB) --- */
-        .hub-stats { display: flex; gap: 10px; margin-bottom: 15px; }
-        .hub-card { flex: 1; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
-        .hub-num { font-size: 18px; font-weight: 900; color: var(--white); }
-        .hub-lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
-
-        .timeline-container { position: relative; margin-top: 15px; border-left: 2px solid var(--border); padding-left: 15px; max-height: 200px; overflow-y: auto; }
-        .t-event { position: relative; margin-bottom: 15px; }
-        .t-event::before { content: ''; position: absolute; left: -20px; top: 5px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
-        .t-date { font-size: 9px; color: var(--text-muted); }
-        .t-status { font-size: 11px; font-weight: 700; color: #fff; }
-        .t-loc { font-size: 10px; color: var(--accent); }
-
-        /* --- NUEVO ESTILO: INTERFAZ TRANSPORTADOR --- */
-        #carrier-dashboard {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--driver-bg); z-index: 100; display: none; /* Oculto por defecto */
-            flex-direction: column; overflow: hidden;
+        .input-group { position: relative; }
+        .input-group label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
+        input, select, textarea { 
+            width: 100%; padding: 14px; background: #0f172a; border: 1px solid var(--border); 
+            border-radius: 10px; color: white; font-family: 'Inter'; font-size: 13px; transition: 0.2s;
         }
-        .driver-header { padding: 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .driver-brand { font-family: 'Montserrat'; font-size: 18px; color: white; }
-        .driver-brand span { color: var(--driver-accent); }
-        
-        .driver-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; }
-        
-        .driver-card {
-            background: #1f2937; border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.05);
-            display: flex; flex-direction: column; gap: 10px;
+        input:focus, textarea:focus { border-color: var(--accent); }
+        .btn { border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 12px; text-transform: uppercase; transition: 0.2s; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+        /* --- VISTA PREVIA --- */
+        .live-preview-container {
+            margin-top: 20px; border: 2px dashed var(--border); padding: 15px; border-radius: 15px; background: rgba(255,255,255,0.02);
         }
-        .dc-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .dc-id { font-family: 'Roboto Mono'; font-size: 16px; color: var(--warning); font-weight: 700; background: rgba(245, 158, 11, 0.1); padding: 5px 10px; border-radius: 5px; }
-        .dc-dest { font-size: 14px; font-weight: 700; color: white; }
-        .dc-meta { font-size: 12px; color: #9ca3af; }
+        .preview-label-wrap { transform: scale(0.7); transform-origin: top center; margin-bottom: -120px; }
 
-        .driver-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .btn-driver {
-            padding: 15px; border-radius: 12px; border: none; font-weight: 800; color: white;
-            font-size: 12px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+        /* --- TABLE --- */
+        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .history-table th { text-align: left; color: var(--text-muted); font-size: 10px; padding: 12px; border-bottom: 1px solid var(--border); }
+        .history-table td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+        .badge.pend { background: rgba(245,158,11,0.2); color: var(--warning); }
+        .badge.done { background: rgba(16,185,129,0.2); color: var(--success); }
+
+        /* --- DRIVER & LABELS --- */
+        #carrier-dashboard { display: none; background: #111827; position: fixed; inset: 0; z-index: 200; flex-direction: column; }
+        .driver-card { background: #1f2937; border: 1px solid #374151; margin-bottom: 15px; border-radius: 12px; padding: 20px; }
+
+        /* --- ETIQUETAS (CSS PANTALLA) --- */
+        main { display: none; } 
+        #label-container { width: 100%; max-width: 800px; }
+
+        .corp-label {
+            background: #fff; color: #000; width: 100%; aspect-ratio: 1.6/1;
+            border: 4px solid #000; display: grid; 
+            grid-template-rows: 70px 1fr 60px 100px;
+            font-family: 'Arial', sans-serif; position: relative;
+            page-break-inside: avoid;
         }
-        .btn-d-transit { background: #3b82f6; }
-        .btn-d-deliver { background: #10b981; grid-column: span 2; font-size: 14px; }
-        .btn-d-issue { background: #ef4444; }
-        .btn-scan-lg { background: var(--driver-accent); color: white; padding: 20px; border-radius: 15px; border: none; font-size: 16px; font-weight: 900; width: 100%; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); margin-bottom: 20px; cursor: pointer; }
+        .cl-header { display: flex; border-bottom: 3px solid #000; align-items: center; padding: 0 20px; }
+        .cl-logo { font-weight: 900; font-size: 20px; letter-spacing: -1px; flex: 1; }
+        .cl-date { font-size: 10px; font-weight: 700; text-align: right; }
+        .cl-body { display: grid; grid-template-columns: 1.5fr 1fr; border-bottom: 3px solid #000; overflow: hidden; }
+        .cl-main-info { border-right: 3px solid #000; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; }
+        .cl-meta-info { display: flex; flex-direction: column; }
+        .cl-box { flex: 1; padding: 10px; border-bottom: 3px solid #000; display: flex; flex-direction: column; justify-content: center; }
+        .cl-box:last-child { border-bottom: none; }
+        .lbl-sm { font-size: 8px; font-weight: 800; text-transform: uppercase; color: #444; margin-bottom: 4px; display: block; }
+        .lbl-xl { font-size: 32px; font-weight: 900; line-height: 0.9; }
+        .lbl-md { font-size: 14px; font-weight: 700; line-height: 1.2; word-break: break-all; }
+        .cl-barcode-strip { background: repeating-linear-gradient(90deg, #000 0px, #000 2px, transparent 2px, transparent 4px, #000 4px, #000 8px, transparent 8px, transparent 9px); border-bottom: 3px solid #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .fake-code { background: white; padding: 0 10px; font-family: 'Roboto Mono'; font-weight: 700; font-size: 14px; letter-spacing: 5px; }
+        .cl-footer { display: flex; padding: 10px 20px; align-items: center; gap: 20px; background: #eee; }
+        .cl-qr { width: 80px; height: 80px; border: 2px solid #000; background: #fff; padding: 2px; }
+        .cl-tracking-big { flex: 1; text-align: right; font-family: 'Roboto Mono'; font-weight: 900; font-size: 28px; letter-spacing: -1px; }
+        .icon-box { position: absolute; top: 80px; right: 20px; width: 40px; height: 40px; border: 2px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; }
 
-        /* --- DISEÑO DE ETIQUETAS --- */
-        main { flex: 1; padding: 40px; background: #000; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        #label-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 20px; }
-
-        .card-pro { 
-            background: #fff; color: #000; border: 6px solid #000; width: 100%; aspect-ratio: 1.6/1; 
-            display: flex; flex-direction: column; position: relative; page-break-inside: avoid;
-        }
-        .zebra-bar { height: 12px; background: repeating-linear-gradient(45deg, #f59e0b, #f59e0b 10px, #000 10px, #000 20px); border-bottom: 4px solid #000; }
-        .gp-header { display: flex; border-bottom: 6px solid #000; height: 90px; }
-        .gp-logo-area { background: #000; color: #fff; padding: 15px 25px; flex: 1.5; display: flex; flex-direction: column; justify-content: center; }
-        .gp-meta-area { flex: 1; padding: 10px 20px; text-align: right; font-size: 11px; font-weight: 800; border-left: 6px solid #000; line-height: 1.3; }
-        .gp-dest-box { padding: 15px 25px; border-bottom: 6px solid #000; flex: 1; }
-        .gp-dest-name { font-size: 50px; font-weight: 900; line-height: 0.9; }
-        .gp-footer { height: 110px; display: flex; align-items: center; padding: 0 20px; background: #f8fafc; gap: 20px; }
-        .gp-qr { width: 85px; height: 85px; border: 2px solid #000; background: #fff; }
-
-        /* RESPONSIVE MÓVIL */
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; }
             aside { width: 100%; height: auto; border-right: none; }
-            .login-card { padding: 25px; }
-            .info-grid { grid-template-columns: 1fr 1fr; }
-            main { display: none; } /* En móvil admin, ocultamos etiquetas */
+            .tr-body { grid-template-columns: 1fr; }
+            .menu-container { display: flex; flex-direction: row; overflow-x: auto; padding: 10px; }
+            .nav-btn { width: auto; white-space: nowrap; }
+            .aside-footer { display: none; }
+            .menu-label { display: none; }
         }
 
+        /* --- CONFIGURACIÓN DE IMPRESIÓN PERSONALIZADA 90x100mm (FULL PAGE) --- */
         @media print {
-            aside, #login-overlay, #carrier-dashboard { display: none !important; }
-            body { background: #fff; display: block; height: auto; }
-            main { padding: 0; background: #fff; display: block; }
-            body.print-x2 #label-container { display: block; }
-            body.print-x2 .card-pro { height: 48vh; margin-bottom: 10px; }
-            body.print-x6 #label-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-            body.print-x6 .card-pro { zoom: 0.6; }
+            aside, #login-overlay, #carrier-dashboard, .aside-content { display: none !important; }
+            
+            @page {
+                /* Define el tamaño exacto del papel: 90mm ancho x 100mm largo */
+                size: 90mm 100mm; 
+                margin: 0; 
+            }
+
+            body { background: #fff; display: block; height: 100%; overflow: visible; margin: 0; padding: 0; }
+            main { padding: 0; background: #fff; display: block; width: 90mm; height: 100%; }
+            #label-container { display: block; width: 100%; height: 100%; }
+            
+            .corp-label { 
+                /* Fuerza que la etiqueta ocupe el 100% del tamaño del papel definido */
+                width: 90mm !important; 
+                height: 100mm !important; 
+                margin: 0 !important; 
+                border-width: 2px !important;
+                page-break-after: always;
+                
+                /* Re-ajustamos la grilla para ocupar todo el alto (10cm) proporcionalmente */
+                /* Header 15% | Cuerpo Flexible | Barcode 12% | Footer 18% */
+                grid-template-rows: 15% 1fr 12% 18% !important; 
+                aspect-ratio: auto !important;
+                box-sizing: border-box;
+            }
+            
+            /* Ajustes de escala interna para impresión */
+            .cl-header { padding: 0 10px; }
+            .cl-logo { font-size: 16px; }
+            .cl-main-info { padding: 10px; }
+            .lbl-xl { font-size: 24px; }
+            .lbl-md { font-size: 12px; }
+            .cl-footer { background: #fff !important; padding: 5px 10px; }
+            .cl-qr { width: 55px; height: 55px; } /* Ajuste leve para que quepa bien */
+            .cl-tracking-big { font-size: 20px; }
+            .corp-label button { display: none !important; }
         }
     </style>
 </head>
@@ -199,214 +230,276 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <div class="login-brand">SAGA <span>COL</span></div>
-            <p style="color:var(--text-muted); font-size:11px; letter-spacing:3px; font-weight:800">SISTEMA LOGÍSTICO COLOMBIA</p>
+            <div class="login-brand">SAGA<span></span></div>
+            <p style="color:var(--text-muted); font-size:12px; letter-spacing:2px; font-weight:900; margin-bottom:40px">GESTION DE ENVIOS Y BUSQUEDA</p>
             
             <div class="big-search-container">
-                <input type="text" id="publicTrackId" class="big-input" placeholder="INTRODUZCA GUÍA (SAGA-XXXXX)">
-                <button class="big-btn-search" onclick="checkPublicTracking()">RASTREAR AHORA</button>
+                <input type="text" id="publicTrackId" class="big-input" placeholder="NÚMERO DE GUÍA (SAGA-XXXXX)">
+                <button class="big-btn-search" onclick="checkPublicTracking()">RASTREAR ENVÍO</button>
             </div>
             
-            <div id="public-track-res" class="track-result-public"></div>
+            <div id="public-track-res" class="track-result-modern"></div>
 
-            <div style="margin-top:40px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px">
-                <p style="cursor:pointer; font-size:11px; color:var(--text-muted); font-weight:800" onclick="document.getElementById('admin-p').style.display='block'">🔒 ACCESO CORPORATIVO</p>
-                <div id="admin-p" style="display:none; margin-top:15px">
-                    <p style="font-size:10px; color:#aaa; margin-bottom:5px">FUSAGASUGA | COLOMBIA</p>
-                    <input type="password" id="adminPass" style="width:200px; padding:12px; text-align:center; border-radius:12px" placeholder="PIN DE ACCESO">
-                    <button class="btn btn-add" style="padding:10px 20px; margin-left:5px" onclick="doLogin()">ENTRAR</button>
+            <div style="margin-top:50px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px">
+                <p style="cursor:pointer; font-size:11px; color:var(--text-muted); font-weight:700" onclick="document.getElementById('admin-p').style.display='block'">🔒 ACCESO CORPORATIVO</p>
+                <div id="admin-p" style="display:none; margin-top:15px; animation:fadeIn 0.5s">
+                    <input type="password" id="adminPass" style="padding:10px 15px; border-radius:8px; border:1px solid var(--border); background:var(--bg-dark); color:white; text-align:center" placeholder="PIN DE SEGURIDAD">
+                    <button class="btn btn-primary" style="padding:10px 20px; margin-left:5px" onclick="doLogin()">ACCEDER</button>
                 </div>
             </div>
         </div>
     </div>
 
     <aside id="admin-sidebar">
-        <div class="brand">SAGA <span>LOGISTICA</span> PRO</div>
+        <div class="aside-header">
+            <div class="brand">SAGA <span>COL</span></div>
+            <div style="font-size:10px; color:var(--text-muted)">Fusagasugá BODEGA PRINCIPAL</div>
+        </div>
         
-        <div class="nav-grid">
-            <button class="tab-btn active" onclick="switchTab('guia', event)">Envíos</button>
-            <button class="tab-btn" onclick="switchTab('ind', event)">Industrial</button>
-            <button class="tab-btn" onclick="switchTab('list', event)">Packing</button>
-            <button class="tab-btn" onclick="switchTab('hist', event)">Historial</button>
-            <button class="tab-btn track-tab" style="grid-column: span 2; border-color:var(--warning); color:var(--warning)" onclick="switchTab('track', event)">📡 HUB DE CONTROL</button>
-        </div>
-
-        <div id="form-guia" class="form-section active">
-            <div class="form-group"><label>Producto</label><input type="text" id="gDest" placeholder="Nombre del Producto"></div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                <div class="form-group"><label>Peso</label><input type="text" id="gPeso" placeholder="0 KG"></div>
-                <div class="form-group"><label>Bultos</label><input type="text" id="gBultos" placeholder="1 / 1"></div>
-            </div>
-            <div class="form-group"><label>Destinatario</label><textarea id="gCont" rows="2" placeholder="Nombre Cliente / Info"></textarea></div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                <div class="form-group"><label>ID Referencia</label><input type="text" id="gRef" placeholder="Auto"></div>
-                <div class="form-group"><label>Etiquetas</label><input type="number" id="gCopies" value="1" min="1"></div>
-            </div>
-            <button class="btn btn-add" onclick="processRegistry('ENVIO')">Crear Envío</button>
-        </div>
-
-        <div id="form-ind" class="form-section">
-            <div class="form-group"><label>Producto Industrial</label><input type="text" id="iName"></div>
-            <div class="form-group"><label>Cantidad / Stock</label><input type="text" id="iQty"></div>
-            <button class="btn btn-add" onclick="processRegistry('INDUSTRIAL')">Registrar Item</button>
-        </div>
-
-        <div id="form-list" class="form-section">
-            <div style="display:flex; gap:5px"><input type="text" id="lItem" style="flex:2" placeholder="Item"><input type="text" id="lQty" style="flex:1" placeholder="Cant"></div>
-            <button class="btn" style="background:var(--border); padding:8px" onclick="addToPacking()">+ Añadir</button>
-            <div id="temp-packing-list" style="font-size:11px; color:var(--warning); font-family:monospace"></div>
-            <button class="btn btn-add" onclick="processRegistry('PACKING')">Generar Packing List</button>
-        </div>
-
-        <div id="form-hist" class="form-section">
-            <div id="history-container" style="display:flex; flex-direction:column; gap:8px"></div>
-        </div>
-
-        <div id="form-track" class="form-section">
-            <div class="hub-stats">
-                <div class="hub-card"><div class="hub-num" id="stat-active">0</div><div class="hub-lbl">Activos</div></div>
-                <div class="hub-card"><div class="hub-num" id="stat-delivered" style="color:var(--success)">0</div><div class="hub-lbl">Entregados</div></div>
-            </div>
-
-            <div style="display:flex; gap:5px">
-                <input type="text" id="searchId" style="flex:1" placeholder="Buscar ID (SAGA-...)">
-                <button class="btn" style="padding:10px; width:40px" onclick="runTracking()">🔍</button>
-            </div>
+        <div class="menu-container">
+            <div class="menu-label">OPERACIONES</div>
+            <button class="nav-btn active" onclick="switchTab('guia', this)">📦 Registrar Envío</button>
+            <button class="nav-btn" onclick="switchTab('ind', this)">🏭 Industrial</button>
+            <button class="nav-btn" onclick="switchTab('list', this)">📋 Packing List</button>
             
-            <div id="tracking-admin-res" style="margin-top:15px; display:none">
-                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-weight:900; color:var(--accent)" id="hub-id">ID</span>
-                        <span class="status-badge" style="background:#fff; color:#000" id="hub-status">STATUS</span>
-                    </div>
-                    <div style="margin-top:10px; padding-bottom:10px; border-bottom:1px solid var(--border)">
-                        <label>Actualizar Estado</label>
-                        <select id="admStatus" style="width:100%; margin-bottom:5px">
-                            <option>EN TRANSITO</option>
-                            <option>EN BODEGA DESTINO</option>
-                            <option>NOVEDAD / RETENIDO</option>
-                            <option>ENTREGADO</option>
-                        </select>
-                        <input type="text" id="admLoc" placeholder="Ubicación / Notas" style="width:100%; margin-bottom:5px">
-                        <button class="btn btn-add" style="width:100%; font-size:11px" onclick="updateStatusFromHub()">GUARDAR MOVIMIENTO</button>
-                    </div>
-                    <div class="timeline-container" id="hub-timeline">
-                        </div>
+            <div class="menu-label">GESTIÓN & CONTROL</div>
+            <button class="nav-btn" onclick="switchTab('track', this)">📡 Hub de Control</button>
+            <button class="nav-btn" onclick="switchTab('hist', this)">🗄️ Historial General</button>
+            
+            <div class="menu-label">SISTEMA</div>
+            <button class="nav-btn" onclick="window.print()">🖨️ Imprimir Cola</button>
+        </div>
+
+        <div class="aside-footer">
+            <div class="user-info">
+                <div class="avatar">AD</div>
+                <div>
+                    <div style="font-size:12px; font-weight:700; color:white">Administrador</div>
+                    <div style="font-size:10px; color:var(--success)">● En línea</div>
                 </div>
             </div>
-        </div>
-
-        <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px">
-            <label>Modo de Impresión</label>
-            <div class="print-options">
-                <button class="btn-p-opt active" onclick="setPrintMode(1, this)">1 x Hoja</button>
-                <button class="btn-p-opt" onclick="setPrintMode(2, this)">2 x Hoja</button>
-                <button class="btn-p-opt" onclick="setPrintMode(6, this)">6 x Hoja</button>
-            </div>
-            <button class="btn btn-print" style="width:100%" onclick="window.print()">🖨️ IMPRIMIR COLA</button>
-            <button class="btn" style="width:100%; margin-top:5px; background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:10px" onclick="location.reload()">CERRAR SESIÓN</button>
+            <button class="nav-btn logout" onclick="location.reload()">🔒 Cerrar Sesión Segura</button>
         </div>
     </aside>
 
-    <div id="carrier-dashboard">
-        <div class="driver-header">
-            <div class="driver-brand">ZONA <span>DE CONDUCTOR</span></div>
-            <button style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:5px 10px; border-radius:5px" onclick="location.reload()">SALIR</button>
-        </div>
-        <div class="driver-content">
-            <div style="text-align:center">
-                <h2 style="margin:0; font-size:24px">Mi Ruta de Hoy</h2>
-                <p style="color:var(--text-muted); font-size:12px">Gestione las entregas en tiempo real</p>
+    <div class="aside-content">
+        <div class="panel-scroll">
+            
+            <div id="form-guia" class="form-section active">
+                <div class="section-title">Nuevo Despacho</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="input-group"><label>Producto / Contenido</label><input type="text" id="gDest" placeholder="Ej: Electrónicos Fragiles" onkeyup="updatePreview()"></div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+                            <div class="input-group"><label>Peso (Kg)</label><input type="text" id="gPeso" placeholder="0.0 KG" onkeyup="updatePreview()"></div>
+                            <div class="input-group"><label>Piezas / Bultos</label><input type="text" id="gBultos" placeholder="1 / 1" onkeyup="updatePreview()"></div>
+                        </div>
+                        <div class="input-group"><label>Datos Destinatario</label><textarea id="gCont" rows="3" placeholder="Nombre completo, Dirección, Teléfono y Ciudad" onkeyup="updatePreview()"></textarea></div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+                            <div class="input-group"><label>Ref Interna</label><input type="text" id="gRef" placeholder="Auto" onkeyup="updatePreview()"></div>
+                            <div class="input-group"><label>Copias Etiqueta</label><input type="number" id="gCopies" value="1" min="1"></div>
+                        </div>
+                    </div>
+
+                    <div class="live-preview-container">
+                        <p style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 10px; text-align: center;">VISTA PREVIA EN TIEMPO REAL</p>
+                        <div id="live-render" class="preview-label-wrap"></div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="processRegistry('ENVIO')">REGISTRAR Y GENERAR RÓTULO</button>
+                
+                <div style="margin-top:20px; padding:20px; background:#1e293b; border-radius:10px">
+                    <label style="color:#aaa; font-size:10px; font-weight:bold">CONFIGURACIÓN DE IMPRESIÓN</label>
+                    <div style="display:flex; gap:10px; margin-top:10px">
+                        <button class="btn-p-opt active" style="flex:1; padding:10px; border:1px solid var(--border); background:var(--bg-dark); color:white; border-radius:5px; cursor:pointer" onclick="setPrintMode(1, this)">1 x Hoja</button>
+                        <button class="btn-p-opt" style="flex:1; padding:10px; border:1px solid var(--border); background:var(--bg-dark); color:#aaa; border-radius:5px; cursor:pointer" onclick="setPrintMode(2, this)">2 x Hoja</button>
+                        <button class="btn-p-opt" style="flex:1; padding:10px; border:1px solid var(--border); background:var(--bg-dark); color:#aaa; border-radius:5px; cursor:pointer" onclick="setPrintMode(6, this)">6 x Hoja</button>
+                    </div>
+                </div>
             </div>
 
-            <button class="btn-scan-lg" onclick="document.getElementById('driver-search').focus()">
-                📷 ESCANEAR / BUSCAR GUÍA
-            </button>
-            
-            <input type="text" id="driver-search" placeholder="Escriba # Guía y Enter..." 
-                   style="width:100%; padding:15px; font-size:18px; text-align:center; margin-bottom:20px; background:#374151; border:none"
-                   onchange="driverSearch(this.value)">
+            <div id="form-ind" class="form-section">
+                <div class="section-title">Registro Industrial</div>
+                <div class="input-group"><label>Nombre Item Industrial</label><input type="text" id="iName"></div>
+                <div class="input-group"><label>Cantidad / Lote</label><input type="text" id="iQty"></div>
+                <button class="btn btn-primary" onclick="processRegistry('INDUSTRIAL')">Registrar Lote</button>
+            </div>
 
-            <div id="driver-list" style="display:flex; flex-direction:column; gap:15px">
+            <div id="form-list" class="form-section">
+                <div class="section-title">Packing List</div>
+                <div style="display:flex; gap:10px; margin-bottom:10px">
+                    <input type="text" id="lItem" style="flex:2" placeholder="Descripción Item">
+                    <input type="text" id="lQty" style="flex:1" placeholder="Cant.">
+                    <button class="btn" style="background:var(--border); color:white" onclick="addToPacking()">+</button>
                 </div>
+                <div id="temp-packing-list" style="padding:15px; background:rgba(0,0,0,0.3); border-radius:10px; font-size:12px; color:var(--warning); font-family:'Roboto Mono'; min-height:50px; margin-bottom:10px"></div>
+                <button class="btn btn-primary" onclick="processRegistry('PACKING')">Finalizar Packing List</button>
+            </div>
+
+            <div id="form-hist" class="form-section">
+                <div class="section-title">Base de Datos</div>
+                <div class="input-group">
+                    <input type="text" placeholder="🔍 Filtrar historial por guía o nombre..." onkeyup="filterHistory(this.value)" style="margin-bottom:15px">
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="history-table">
+                        <thead><tr><th>ID</th><th>DESTINO</th><th>ESTADO</th><th>ACCION</th></tr></thead>
+                        <tbody id="history-rows"></tbody>
+                    </table>
+                </div>
+                <button class="btn" style="width:100%; border:1px solid var(--danger); color:var(--danger); margin-top:20px" onclick="clearHistory()">BORRAR TODO EL HISTORIAL</button>
+            </div>
+
+            <div id="form-track" class="form-section">
+                <div class="section-title">Torre de Control</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px">
+                    <div style="background:#1e293b; padding:20px; border-radius:10px; text-align:center; border:1px solid var(--border)">
+                        <div style="font-size:30px; font-weight:900; color:white" id="stat-active">0</div>
+                        <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase">En Tránsito</div>
+                    </div>
+                    <div style="background:#1e293b; padding:20px; border-radius:10px; text-align:center; border:1px solid rgba(16,185,129,0.3)">
+                        <div style="font-size:30px; font-weight:900; color:var(--success)" id="stat-delivered">0</div>
+                        <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase">Entregados</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-bottom:15px">
+                    <input type="text" id="searchId" style="flex:1" placeholder="Escanear o Escribir ID...">
+                    <button class="btn btn-primary" style="padding:10px; width:60px" onclick="runTracking()">🔎</button>
+                </div>
+                
+                <div id="tracking-admin-res" style="display:none; background:#1e293b; padding:20px; border-radius:15px; border:1px solid var(--border)">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:15px">
+                        <span style="font-weight:900; color:var(--accent); font-family:'Roboto Mono'; font-size:18px" id="hub-id">ID</span>
+                        <span class="badge pend" id="hub-status">STATUS</span>
+                    </div>
+                    <div class="input-group">
+                        <label>Actualizar Estado</label>
+                        <select id="admStatus" style="margin-bottom:10px">
+                            <option value="EN TRANSITO">EN TRÁNSITO NACIONAL</option>
+                            <option value="EN BODEGA DESTINO">EN BODEGA DESTINO</option>
+                            <option value="EN REPARTO">EN REPARTO / RUTA</option>
+                            <option value="NOVEDAD">NOVEDAD / RETENIDO</option>
+                            <option value="ENTREGADO">ENTREGADO SATISFACTORIAMENTE</option>
+                        </select>
+                        <input type="text" id="admLoc" placeholder="Ciudad / Punto de Control" style="margin-bottom:10px">
+                        <button class="btn btn-primary" style="width:100%" onclick="updateStatusFromHub()">REGISTRAR EVENTO</button>
+                    </div>
+                    <div class="modern-timeline" id="hub-timeline"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="carrier-dashboard">
+        <div style="padding:20px; background:var(--bg-panel); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center">
+            <div class="brand">SAGA <span>CONDUCTOR</span></div>
+            <button class="btn" style="border:1px solid var(--danger); color:var(--danger)" onclick="location.reload()">SALIR</button>
+        </div>
+        <div style="padding:20px; overflow-y:auto; max-width:600px; margin:0 auto; width:100%">
+            <div style="text-align:center; margin-bottom:20px">
+                <h2 style="margin:0; color:white">Mi Ruta Activa</h2>
+                <p style="color:var(--text-muted); font-size:13px">Gestión de entregas última milla</p>
+            </div>
+            <button class="btn btn-primary" style="width:100%; padding:20px; font-size:16px; margin-bottom:20px; background:var(--driver)" onclick="document.getElementById('driver-search').focus()">📷 ESCANEAR GUÍA</button>
+            <input type="text" id="driver-search" placeholder="Escriba # Guía y Enter..." style="margin-bottom:20px; text-align:center; font-size:16px" onchange="driverSearch(this.value)">
+            <div id="driver-list"></div>
         </div>
     </div>
 
     <main><div id="label-container"></div></main>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('saga_pro_db')) || [];
+        // --- BASE DE DATOS LOCAL ---
+        let db = JSON.parse(localStorage.getItem('saga_pro_db_v2')) || [];
         let packingBuffer = [];
-        let currentUserRole = '';
 
-        // --- SISTEMA DE LOGIN MEJORADO ---
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const guideParam = urlParams.get('guia');
+            if(guideParam) {
+                document.getElementById('publicTrackId').value = guideParam;
+                checkPublicTracking();
+            }
+            updatePreview(); 
+        };
+
+        // --- PREVIEW DINÁMICO ---
+        function updatePreview() {
+            const id = document.getElementById('gRef').value.toUpperCase() || "SAGA-000000";
+            const info = document.getElementById('gCont').value.toUpperCase() || "ESPERANDO DATOS...";
+            const title = document.getElementById('gDest').value.toUpperCase() || "CONTENIDO";
+            const p = document.getElementById('gPeso').value || "0";
+            const b = document.getElementById('gBultos').value || "1/1";
+            
+            const renderBox = document.getElementById('live-render');
+            renderBox.innerHTML = `
+                <div class="corp-label">
+                    <div class="cl-header">
+                        <div class="cl-logo">NICHOLL´S TACTICA S.A.S</div>
+                        <div class="cl-date">ORIGEN: FUSAGASUGÁ COL<br>PREVIEW</div>
+                    </div>
+                    <div class="cl-body">
+                        <div class="cl-main-info">
+                            <span class="lbl-sm">DESTINATARIO:</span><div class="lbl-md">${info}</div>
+                            <div style="margin-top:10px"><span class="lbl-sm">CONTENIDO:</span><div style="font-size:12px">${title}</div></div>
+                            <div style="margin-top:auto; font-size:36px; font-weight:900">CO-FUSA</div>
+                        </div>
+                        <div class="cl-meta-info">
+                            <div class="cl-box"><span class="lbl-sm">PESO (KG)</span><span class="lbl-xl">${p}</span></div>
+                            <div class="cl-box"><span class="lbl-sm">PIEZAS</span><span class="lbl-xl">${b}</span></div>
+                        </div>
+                    </div>
+                    <div class="cl-barcode-strip"><div class="fake-code">${id}</div></div>
+                    <div class="cl-footer">
+                        <div class="cl-qr" style="display:flex; align-items:center; justify-content:center; font-size:8px; text-align:center">QR PREVIEW</div>
+                        <div class="cl-tracking-big">${id}</div>
+                    </div>
+                    <div class="icon-box">!</div>
+                </div>
+            `;
+        }
+
+        // --- AUTH ---
         function doLogin() {
             const pass = document.getElementById('adminPass').value;
             const overlay = document.getElementById('login-overlay');
-            
-            if(pass === 'JULIAN09') {
-                currentUserRole = 'ADMIN';
-                overlay.style.transform = 'translateY(-100%)';
-                updateStats(); // Cargar estadísticas iniciales
-            } else if (pass === 'C1') {
-                currentUserRole = 'DRIVER';
-                overlay.style.transform = 'translateY(-100%)';
-                document.getElementById('admin-sidebar').style.display = 'none'; // Ocultar panel admin
-                document.querySelector('main').style.display = 'none'; // Ocultar area de etiquetas
-                document.getElementById('carrier-dashboard').style.display = 'flex'; // Mostrar panel driver
-                renderDriverRoute();
-            } else { 
-                alert('Credencial Inválida'); 
-            }
+            if(pass === 'JULIAN09') { overlay.style.transform = 'translateY(-100%)'; updateStats(); updateHistory(); } 
+            else if (pass === 'C1') { overlay.style.transform = 'translateY(-100%)'; document.getElementById('admin-sidebar').style.display = 'none'; document.querySelector('.aside-content').style.display = 'none'; document.getElementById('carrier-dashboard').style.display = 'flex'; renderDriverRoute(); } 
+            else { alert('Credencial Inválida'); }
         }
 
-        // --- FUNCIONES PÚBLICAS Y ADMIN ---
+        // --- RASTREO PÚBLICO ---
         function checkPublicTracking() {
             const pid = document.getElementById('publicTrackId').value.toUpperCase().trim();
             const resBox = document.getElementById('public-track-res');
             const item = db.find(i => i.id === pid);
-
-            if(!item) {
-                resBox.style.display = 'block';
-                resBox.innerHTML = `<div style="padding:20px; color:var(--danger)">❌ GUÍA NO ENCONTRADA</div>`;
-                return;
-            }
-
+            if(!item) { resBox.style.display = 'block'; resBox.innerHTML = `<div style="padding:40px; text-align:center; color:var(--danger); font-weight:700">❌ GUÍA NO ENCONTRADA EN EL SISTEMA</div>`; return; }
             resBox.style.display = 'block';
-            const isTransit = item.status.includes('TRANSITO') || item.status.includes('REPARTO');
             const isDelivered = item.status.includes('ENTREGADO');
-
-            resBox.innerHTML = `
-                <div class="tracking-header">
-                    <div><span style="font-size:9px; color:var(--text-muted)">GUÍA</span><div style="font-size:22px; font-weight:900; color:var(--accent)">${item.id}</div></div>
-                    <div class="status-badge" style="background:${isDelivered ? 'var(--success)' : 'var(--warning)'}; color:#000">${item.status}</div>
-                </div>
-                <div class="tracking-stepper">
-                    <div class="step active"><div class="step-circle"></div><div class="step-label">Recibido</div></div>
-                    <div class="step ${isTransit || isDelivered ? 'active' : ''}"><div class="step-circle"></div><div class="step-label">Ruta</div></div>
-                    <div class="step ${isDelivered ? 'active' : ''}"><div class="step-circle"></div><div class="step-label">Entregado</div></div>
-                </div>
-                <div class="info-grid">
-                    <div class="info-item"><label>Producto</label><span>${item.title}</span></div>
-                    <div class="info-item"><label>Destinatario</label><span>${item.info}</span></div>
-                    <div class="info-item"><label>Ubicación Actual</label><span>${item.loc}</span></div>
-                    <div class="info-item"><label>Última Actualización</label><span>${item.date}</span></div>
-                </div>`;
+            const statusClass = isDelivered ? 'status-ok' : 'status-warn';
+            const events = item.events || [{status: item.status, loc: item.loc, date: item.date}];
+            let timelineHTML = events.slice().reverse().map((e, index) => `<div class="mt-item ${index===0?'active':''}"><div class="mt-dot"></div><div class="mt-date">${e.date}</div><div class="mt-status">${e.status}</div><div class="mt-loc">${e.loc}</div></div>`).join('');
+            resBox.innerHTML = `<div class="tr-header"><div><div style="font-size:10px; color:var(--text-muted); text-transform:uppercase">Número de Guía</div><div style="font-size:24px; font-weight:900; color:white; font-family:'Roboto Mono'">${item.id}</div></div><div class="tr-status-big ${statusClass}">${item.status}</div></div><div class="tr-body"><div><div style="font-size:11px; color:var(--text-muted); font-weight:700; margin-bottom:15px">HISTORIAL DE MOVIMIENTOS</div><div class="modern-timeline">${timelineHTML}</div></div><div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:15px; height:fit-content"><div style="font-size:11px; color:var(--text-muted); margin-bottom:5px">CONTENIDO</div><div style="color:white; font-weight:600; margin-bottom:15px">${item.title}</div><div style="font-size:11px; color:var(--text-muted); margin-bottom:5px">DESTINATARIO</div><div style="color:white; font-weight:600; margin-bottom:15px; font-size:13px">${item.info}</div></div></div>`;
         }
 
-        function setPrintMode(n, btn) {
-            document.querySelectorAll('.btn-p-opt').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.body.className = n === 1 ? 'print-x1' : 'print-x' + n;
-        }
-
-        function switchTab(type, e) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        // --- CORE DEL SISTEMA ---
+        function switchTab(type, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-            if(e) e.target.classList.add('active');
+            if(btn) btn.classList.add('active');
             document.getElementById('form-' + type).classList.add('active');
             if(type === 'hist') updateHistory();
             if(type === 'track') updateStats();
+        }
+
+        function setPrintMode(n, btn) {
+            document.querySelectorAll('.btn-p-opt').forEach(b => { b.style.background = 'var(--bg-dark)'; b.style.color = '#aaa'; b.style.borderColor = 'var(--border)'; });
+            btn.style.background = 'var(--success)'; btn.style.color = 'white'; btn.style.borderColor = 'var(--success)';
+            document.body.className = n === 1 ? 'print-x1' : 'print-x' + n;
         }
 
         function addToPacking() {
@@ -419,90 +512,61 @@
         }
 
         function processRegistry(type) {
-            const id = document.getElementById('gRef')?.value.toUpperCase() || "SAGA-" + Math.floor(10000 + Math.random() * 90000);
-            
-            // Creamos estructura compatible con historial
-            let entry = { 
-                id, type, date: new Date().toLocaleString(), status: 'BODEGA ORIGEN', loc: 'ZONA DESPACHO',
-                title: (type === 'INDUSTRIAL' ? document.getElementById('iName').value : document.getElementById('gDest').value).toUpperCase(),
-                v1: (type === 'INDUSTRIAL' ? 'STOCK' : document.getElementById('gPeso').value) || '---',
-                v2: (type === 'INDUSTRIAL' ? document.getElementById('iQty').value : document.getElementById('gBultos').value) || '---',
-                info: document.getElementById('gCont')?.value.toUpperCase() || 'STOCK INTERNO',
-                events: [] // Nuevo array para timeline
-            };
-
-            // Evento inicial
-            entry.events.push({ status: 'BODEGA ORIGEN', loc: 'ZONA DESPACHO', date: new Date().toLocaleString(), user: 'ADMIN' });
-
-            if(type === 'PACKING') {
-                entry.items = [...packingBuffer]; entry.title = "PACKING LIST"; entry.v1 = "ITEMS"; entry.v2 = packingBuffer.length;
-                packingBuffer = []; document.getElementById('temp-packing-list').innerHTML = "";
-            }
-
-            db.unshift(entry);
-            saveDB();
-            
+            const id = document.getElementById('gRef')?.value.toUpperCase() || "SAGA-" + Math.floor(100000 + Math.random() * 900000);
+            let entry = { id, type, date: new Date().toLocaleString(), status: 'ADMITIDO EN ORIGEN', loc: 'FUSAGASUGÁ HUB', title: (type === 'INDUSTRIAL' ? document.getElementById('iName').value : document.getElementById('gDest').value).toUpperCase(), v1: (type === 'INDUSTRIAL' ? 'STOCK' : document.getElementById('gPeso').value) || '1 KG', v2: (type === 'INDUSTRIAL' ? document.getElementById('iQty').value : document.getElementById('gBultos').value) || '1/1', info: document.getElementById('gCont')?.value.toUpperCase() || 'STOCK INTERNO', events: [] };
+            entry.events.push({ status: 'ADMITIDO EN ORIGEN', loc: 'FUSAGASUGÁ HUB', date: new Date().toLocaleString(), user: 'ADMIN' });
+            if(type === 'PACKING') { entry.items = [...packingBuffer]; entry.title = "PACKING LIST"; entry.v1 = "ITEMS"; entry.v2 = packingBuffer.length; packingBuffer = []; document.getElementById('temp-packing-list').innerHTML = ""; }
+            db.unshift(entry); saveDB();
             const copies = type === 'ENVIO' ? parseInt(document.getElementById('gCopies').value) || 1 : 1;
-            for(let i=0; i<copies; i++) renderLabel(entry);
-            alert("Registrado: " + id);
+            for(let i=0; i<copies; i++) renderCorporateLabel(entry);
+            alert("✅ Registro Exitoso: " + id);
             updateStats();
+            if(type==='ENVIO') { document.getElementById('gDest').value=''; document.getElementById('gCont').value=''; updatePreview(); }
         }
 
-        function renderLabel(data) {
+        function renderCorporateLabel(data) {
             const card = document.createElement('div');
-            card.className = 'card-pro';
+            card.className = 'corp-label';
             const qrid = "qr_" + Math.random().toString(16).slice(2);
-            
-            let content = data.type === 'PACKING' ? 
-                `<div style="padding:15px; flex:1"><table>${data.items.map(i=>`<tr><td>${i.item}</td><td align="right"><b>${i.qty}</b></td></tr>`).join('')}</table></div>` :
-                `<div class="gp-dest-box"><span style="font-size:9px; font-weight:800; color:#666">PRODUCTO / ITEM</span><div class="gp-dest-name">${data.title}</div></div>
-                 <div style="display:flex; border-bottom:6px solid #000"><div style="flex:1; padding:15px; border-right:6px solid #000"><b>PESO:</b> ${data.v1}</div><div style="flex:1; padding:15px"><b>BULTOS:</b> ${data.v2}</div></div>`;
-
-            card.innerHTML = `<button style="position:absolute; top:5px; right:5px" onclick="this.parentElement.remove()">X</button>
-                <div class="zebra-bar"></div>
-                <div class="gp-header"><div class="gp-logo-area">NICHOLL'S TACTICA S.A.S</div><div class="gp-meta">${data.id}<br>${data.date}</div></div>
-                ${content}
-                <div class="gp-footer"><div id="${qrid}" class="gp-qr"></div><div style="flex:1; text-align:right"><b>DESTINATARIO:</b><br>${data.info}<div style="font-size:30px; font-weight:900">${data.id}</div></div></div>`;
-            
+            const currentUrl = window.location.href.split('?')[0]; 
+            const smartLink = `${currentUrl}?guia=${data.id}`;
+            let mainContent = data.type === 'PACKING' ? `<div style="font-size:10px; overflow:hidden"><b>LISTA DE EMPAQUE:</b><br>${data.items.slice(0,8).map(i => `${i.item} (${i.qty})`).join(', ')}...</div>` : `<span class="lbl-sm">DESTINATARIO:</span><div class="lbl-md">${data.info}</div><div style="margin-top:10px"><span class="lbl-sm">CONTENIDO:</span><div style="font-size:12px">${data.title}</div></div>`;
+            card.innerHTML = `<button style="position:absolute; top:0; right:-30px; background:red; color:white; border:none; padding:5px; cursor:pointer" onclick="this.parentElement.remove()">X</button><div class="cl-header"><div class="cl-logo">NICHOLL´S TACTICA </div><div class="cl-date">ORIGEN: FUSAGASUGÁ<br>${data.date.split(',')[0]}</div></div><div class="cl-body"><div class="cl-main-info">${mainContent}<div style="margin-top:auto; font-size:36px; font-weight:900">FUSA-COL</div></div><div class="cl-meta-info"><div class="cl-box"><span class="lbl-sm">PESO (KG)</span><span class="lbl-xl">${data.v1.replace('KG','')}</span></div><div class="cl-box"><span class="lbl-sm">PIEZAS</span><span class="lbl-xl">${data.v2}</span></div></div></div><div class="cl-barcode-strip"><div class="fake-code">${data.id}</div></div><div class="cl-footer"><div id="${qrid}" class="cl-qr"></div><div class="cl-tracking-big">${data.id}</div></div><div class="icon-box">!</div>`;
             document.getElementById('label-container').prepend(card);
-            setTimeout(() => new QRCode(document.getElementById(qrid), { text: data.id, width: 85, height: 85 }), 50);
+            setTimeout(() => new QRCode(document.getElementById(qrid), { text: smartLink, width: 75, height: 75, correctLevel: QRCode.CorrectLevel.L }), 50);
         }
 
-        // --- NUEVA LÓGICA DE HUB DE CONTROL (ADMIN) ---
+        function updateHistory() { renderHistoryTable(db); }
+        function renderHistoryTable(dataArr) {
+            const tbody = document.getElementById('history-rows');
+            if(dataArr.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:#666">No hay registros</td></tr>`; return; }
+            tbody.innerHTML = dataArr.map((item) => {
+                const isDelivered = item.status.includes('ENTREGADO');
+                const badgeClass = isDelivered ? 'done' : 'pend';
+                return `<tr><td style="font-family:'Roboto Mono'; font-weight:700">${item.id}</td><td><div style="font-weight:700; font-size:11px">${item.info.substring(0,25)}...</div><div style="color:var(--text-muted); font-size:9px">${item.date}</div></td><td><span class="badge ${badgeClass}">${item.status}</span></td><td style="text-align:right"><button style="background:transparent; border:none; color:var(--danger); cursor:pointer" onclick="deleteItem('${item.id}')">🗑️</button></td></tr>`;
+            }).join('');
+        }
+
+        function filterHistory(query) { const q = query.toUpperCase(); const filtered = db.filter(i => i.id.includes(q) || i.info.includes(q)); renderHistoryTable(filtered); }
+        function deleteItem(id) { if(confirm('¿Eliminar guía ' + id + '?')) { db = db.filter(i => i.id !== id); saveDB(); updateHistory(); updateStats(); } }
+        function clearHistory() { if(confirm('¿BORRAR TODO?')) { db = []; saveDB(); updateHistory(); updateStats(); } }
+
         function runTracking() {
             const id = document.getElementById('searchId').value.toUpperCase().trim();
             const item = db.find(i => i.id === id);
             if(!item) return alert("Guía no encontrada");
-            
             document.getElementById('tracking-admin-res').style.display = 'block';
             document.getElementById('hub-id').innerText = item.id;
             document.getElementById('hub-status').innerText = item.status;
-            
-            renderTimeline(item);
-        }
-
-        function renderTimeline(item) {
-            const container = document.getElementById('hub-timeline');
-            // Compatibilidad hacia atrás si no tiene eventos
-            const events = item.events || [{status: item.status, loc: item.loc, date: item.date}];
-            
-            container.innerHTML = events.slice().reverse().map(e => `
-                <div class="t-event">
-                    <div class="t-status">${e.status}</div>
-                    <div class="t-loc">${e.loc}</div>
-                    <div class="t-date">${e.date} (${e.user || 'SISTEMA'})</div>
-                </div>
-            `).join('');
+            const timelineHTML = (item.events || []).slice().reverse().map(e => `<div class="mt-item"><div class="mt-dot"></div><div class="mt-date">${e.date} (${e.user || 'SYS'})</div><div class="mt-status">${e.status}</div><div class="mt-loc">${e.loc}</div></div>`).join('');
+            document.getElementById('hub-timeline').innerHTML = timelineHTML;
         }
 
         function updateStatusFromHub() {
             const id = document.getElementById('hub-id').innerText;
             const newStatus = document.getElementById('admStatus').value;
-            const newLoc = document.getElementById('admLoc').value || 'ACTUALIZACIÓN HUB';
-            
-            addEventToItem(id, newStatus, newLoc, 'ADMIN');
-            runTracking(); // Refrescar vista
-            updateStats();
+            const newLoc = document.getElementById('admLoc').value || 'HUB CENTRAL';
+            addEventToItem(id, newStatus, newLoc, 'ADMIN'); runTracking(); updateStats(); updateHistory();
         }
 
         function updateStats() {
@@ -512,82 +576,17 @@
             document.getElementById('stat-delivered').innerText = delivered;
         }
 
-        // --- LÓGICA DE TRANSPORTADOR (DRIVER) ---
         function renderDriverRoute() {
             const list = document.getElementById('driver-list');
-            // Filtramos solo paquetes activos para el conductor
             const routeItems = db.filter(i => !i.status.includes('ENTREGADO'));
-            
-            if(routeItems.length === 0) {
-                list.innerHTML = `<div style="color:white; text-align:center; padding:20px">✅ No hay entregas pendientes</div>`;
-                return;
-            }
-
-            list.innerHTML = routeItems.map(item => `
-                <div class="driver-card">
-                    <div class="dc-top">
-                        <div class="dc-id">${item.id}</div>
-                        <div style="font-size:10px; color:#aaa">${item.status}</div>
-                    </div>
-                    <div class="dc-dest">${item.info}</div>
-                    <div class="dc-meta">${item.title} | ${item.loc}</div>
-                    <div class="driver-actions">
-                        <button class="btn-driver btn-d-transit" onclick="driverUpdate('${item.id}', 'EN REPARTO', 'RUTA')">🚚 En Ruta</button>
-                        <button class="btn-driver btn-d-issue" onclick="driverUpdate('${item.id}', 'NOVEDAD', 'INTENTO FALLIDO')">⚠️ Novedad</button>
-                        <button class="btn-driver btn-d-deliver" onclick="driverUpdate('${item.id}', 'ENTREGADO', 'RECIBIDO CONFORME')">✅ CONFIRMAR ENTREGA</button>
-                    </div>
-                </div>
-            `).join('');
+            if(routeItems.length === 0) { list.innerHTML = `<div style="color:white; text-align:center; padding:20px; opacity:0.5">✅ Ruta completada.</div>`; return; }
+            list.innerHTML = routeItems.map(item => `<div class="driver-card"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span style="background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:5px; font-family:'Roboto Mono'; color:var(--warning)">${item.id}</span><span style="font-size:10px; color:#aaa">${item.loc}</span></div><div style="color:white; font-weight:700; font-size:16px; margin-bottom:5px">${item.info}</div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px"><button class="btn" style="background:var(--accent); color:white" onclick="driverUpdate('${item.id}', 'EN REPARTO', 'RUTA DE ENTREGA')">🚚 En Ruta</button><button class="btn" style="background:var(--danger); color:white" onclick="driverUpdate('${item.id}', 'NOVEDAD', 'INTENTO FALLIDO')">⚠️ Novedad</button><button class="btn" style="background:var(--success); color:white; grid-column: span 2; padding:15px" onclick="driverUpdate('${item.id}', 'ENTREGADO', 'RECIBIDO CONFORME')">✅ CONFIRMAR ENTREGA</button></div></div>`).join('');
         }
 
-        function driverSearch(val) {
-            const id = val.toUpperCase().trim();
-            const item = db.find(i => i.id === id);
-            if(item) {
-                // Filtramos la vista para mostrar solo este item
-                const list = document.getElementById('driver-list');
-                // Reutilizamos el render pero forzamos el html solo de este item
-                // Para simplificar, simplemente recargamos la ruta y hacemos scroll o alertamos
-                alert(`Paquete ${id} encontrado. Estado: ${item.status}`);
-            } else {
-                alert("Paquete no asignado o no existe");
-            }
-            document.getElementById('driver-search').value = '';
-        }
-
-        function driverUpdate(id, status, loc) {
-            if(!confirm(`¿Cambiar estado de ${id} a ${status}?`)) return;
-            addEventToItem(id, status, loc, 'CONDUCTOR');
-            renderDriverRoute(); // Recargar lista
-        }
-
-        // --- UTILIDADES GLOBALES ---
-        function addEventToItem(id, status, loc, user) {
-            const item = db.find(i => i.id === id);
-            if(!item) return;
-
-            item.status = status;
-            item.loc = loc;
-            item.date = new Date().toLocaleString();
-            
-            if(!item.events) item.events = [];
-            item.events.push({
-                status: status,
-                loc: loc,
-                date: new Date().toLocaleString(),
-                user: user
-            });
-
-            saveDB();
-        }
-
-        function saveDB() {
-            localStorage.setItem('saga_pro_db', JSON.stringify(db));
-        }
-
-        function updateHistory() {
-            document.getElementById('history-container').innerHTML = db.slice(0,10).map(i=>`<div style="font-size:11px; padding:10px; background:rgba(255,255,255,0.05); border-radius:5px"><b>${i.id}</b> - ${i.title}</div>`).join('');
-        }
+        function driverSearch(val) { const id = val.toUpperCase().trim(); const item = db.find(i => i.id === id); if(item) { alert(`📦 PAQUETE ENCONTRADO:\n${item.info}\nEstado: ${item.status}`); } else { alert("❌ No existe en base de datos"); } document.getElementById('driver-search').value = ''; }
+        function driverUpdate(id, status, loc) { if(!confirm(`¿Actualizar ${id} a estado: ${status}?`)) return; addEventToItem(id, status, loc, 'CONDUCTOR'); renderDriverRoute(); }
+        function addEventToItem(id, status, loc, user) { const item = db.find(i => i.id === id); if(!item) return; item.status = status; item.loc = loc; item.date = new Date().toLocaleString(); if(!item.events) item.events = []; item.events.push({ status, loc, date: new Date().toLocaleString(), user }); saveDB(); }
+        function saveDB() { localStorage.setItem('saga_pro_db_v2', JSON.stringify(db)); }
     </script>
 </body>
 </html>
