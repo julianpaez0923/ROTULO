@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -147,7 +146,7 @@
 
         /* --- ETIQUETAS (CSS PANTALLA) --- */
         main { display: none; } 
-        #label-container { width: 100%; max-width: 800px; }
+        #label-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 10px; }
 
         .corp-label {
             background: #fff; color: #000; width: 100%; aspect-ratio: 1.6/1;
@@ -174,6 +173,9 @@
         .cl-tracking-big { flex: 1; text-align: right; font-family: 'Roboto Mono'; font-weight: 900; font-size: 28px; letter-spacing: -1px; }
         .icon-box { position: absolute; top: 80px; right: 20px; width: 40px; height: 40px; border: 2px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; }
 
+        /* ESTRUCTURA MINI (OCULTA POR DEFECTO EN PANTALLA) */
+        .mini-layout { display: none; }
+
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; }
             aside { width: 100%; height: auto; border-right: none; }
@@ -184,45 +186,161 @@
             .menu-label { display: none; }
         }
 
-        /* --- CONFIGURACIÓN DE IMPRESIÓN PERSONALIZADA 90x100mm (FULL PAGE) --- */
+        /* --- CONFIGURACIÓN DE IMPRESIÓN --- */
         @media print {
             aside, #login-overlay, #carrier-dashboard, .aside-content { display: none !important; }
             
-            @page {
-                /* Define el tamaño exacto del papel: 90mm ancho x 100mm largo */
-                size: 90mm 100mm; 
-                margin: 0; 
-            }
-
             body { background: #fff; display: block; height: 100%; overflow: visible; margin: 0; padding: 0; }
-            main { padding: 0; background: #fff; display: block; width: 90mm; height: 100%; }
+            main { padding: 0; background: #fff; display: block; width: 100%; height: 100%; }
             #label-container { display: block; width: 100%; height: 100%; }
             
-            .corp-label { 
-                /* Fuerza que la etiqueta ocupe el 100% del tamaño del papel definido */
+            /* --- ESTILO 1 POR HOJA --- */
+            body.print-x1 .corp-label { 
                 width: 90mm !important; 
                 height: 100mm !important; 
                 margin: 0 !important; 
                 border-width: 2px !important;
                 page-break-after: always;
-                
-                /* Re-ajustamos la grilla para ocupar todo el alto (10cm) proporcionalmente */
-                /* Header 15% | Cuerpo Flexible | Barcode 12% | Footer 18% */
                 grid-template-rows: 15% 1fr 12% 18% !important; 
                 aspect-ratio: auto !important;
                 box-sizing: border-box;
             }
+
+            /* --- ESTILO 2 POR HOJA --- */
+            body.print-x2 .corp-label {
+                height: 50mm !important; 
+                width: 100% !important;
+                margin: 0 !important;
+                border: 2px solid #000 !important;
+                border-bottom: 2px dashed #999 !important;
+                page-break-after: avoid !important;
+                grid-template-rows: 15% 1fr 12% 16% !important;
+                padding: 0 !important;
+            }
+            body.print-x2 .corp-label:nth-child(2n) {
+                page-break-after: always !important;
+                border-bottom: 2px solid #000 !important;
+            }
+            body.print-x2 .cl-header { padding: 0 5px; height: 100%; }
+            body.print-x2 .cl-logo { font-size: 14px; }
+            body.print-x2 .cl-date { font-size: 8px; }
+            body.print-x2 .cl-main-info { padding: 5px; }
+            body.print-x2 .lbl-xl { font-size: 20px; } 
+            body.print-x2 .lbl-md { font-size: 10px; line-height: 1.1; }
+            body.print-x2 .cl-footer { padding: 2px 10px; }
+            body.print-x2 .cl-qr { width: 35px; height: 35px; }
+            body.print-x2 .cl-tracking-big { font-size: 16px; }
+            body.print-x2 .icon-box { display: none; }
+            body.print-x2 .cl-barcode-strip { height: 100%; }
+            body.print-x2 .fake-code { font-size: 10px; letter-spacing: 2px; }
+
+            /* --- MODO MINI (50mm x 25mm - 2 Columnas) - DISEÑO MEJORADO --- */
+            body.print-mini {
+                width: 108mm; 
+                margin: 0;
+            }
+
+            body.print-mini .corp-label {
+                width: 50mm !important; 
+                height: 25mm !important;
+                float: left !important;
+                /* Espaciados solicitados: 6mm abajo, 3mm lado */
+                margin-right: 5mm !important; 
+                margin-bottom: 6mm !important; 
+                
+                border: 2px solid #000 !important; 
+                padding: 0 !important;
+                display: block !important;
+                page-break-inside: avoid !important;
+                background: white !important;
+                box-sizing: border-box !important;
+            }
             
-            /* Ajustes de escala interna para impresión */
-            .cl-header { padding: 0 10px; }
-            .cl-logo { font-size: 16px; }
-            .cl-main-info { padding: 10px; }
-            .lbl-xl { font-size: 24px; }
-            .lbl-md { font-size: 12px; }
-            .cl-footer { background: #fff !important; padding: 5px 10px; }
-            .cl-qr { width: 55px; height: 55px; } /* Ajuste leve para que quepa bien */
-            .cl-tracking-big { font-size: 20px; }
-            .corp-label button { display: none !important; }
+            body.print-mini .cl-header, 
+            body.print-mini .cl-body, 
+            body.print-mini .cl-barcode-strip, 
+            body.print-mini .cl-footer, 
+            body.print-mini .icon-box { display: none !important; }
+            
+            body.print-mini .corp-label button { display: none !important; }
+
+            /* --- NUEVO DISEÑO ALTO CONTRASTE MINI --- */
+            body.print-mini .mini-layout {
+                display: grid !important;
+                grid-template-columns: 22mm 1fr; /* QR fijo, resto para info */
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            .mini-qr-box {
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-right: 2px solid #000;
+                padding: 2px;
+            }
+            .mini-qr-box img { width: 100% !important; height: auto !important; display: block; }
+
+            .mini-content-box {
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* PRODUCTO GRANDE Y NOTORIO (INVERTIDO) */
+            .mini-header {
+                background: #000;
+                color: #fff;
+                flex: 1; /* Ocupa mitad superior */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 2px 4px;
+                line-height: 0.9;
+                border-bottom: 2px solid #000;
+            }
+            
+            .mini-prod-name {
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 800;
+                font-size: 8px; /* Ajuste para que quepa */
+                text-transform: uppercase;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+
+            /* CANTIDAD GIGANTE */
+            .mini-body {
+                flex: 1.5; /* Más espacio para el número */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #fff;
+                position: relative;
+            }
+
+            .mini-qty-val {
+                font-family: 'Inter', sans-serif;
+                font-weight: 900;
+                font-size: 22px; /* GIGANTE */
+                color: #000;
+                line-height: 1;
+            }
+            
+            .mini-qty-lbl {
+                position: absolute;
+                top: 0;
+                left: 2px;
+                font-size: 5px;
+                font-weight: 700;
+                color: #555;
+                text-transform: uppercase;
+            }
         }
     </style>
 </head>
@@ -308,15 +426,17 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" onclick="processRegistry('ENVIO')">REGISTRAR Y GENERAR RÓTULO</button>
+                <button class="btn btn-primary" onclick="processRegistry('ENVIO')">REGISTRAR (AÑADIR A COLA)</button>
+                <p style="font-size:10px; color:#aaa; margin-top:5px; text-align:center">💡 Puedes registrar varios envíos seguidos y luego imprimir la cola completa.</p>
                 
                 <div style="margin-top:20px; padding:20px; background:#1e293b; border-radius:10px">
                     <label style="color:#aaa; font-size:10px; font-weight:bold">CONFIGURACIÓN DE IMPRESIÓN</label>
                     <div style="display:flex; gap:10px; margin-top:10px">
                         <button class="btn-p-opt active" style="flex:1; padding:10px; border:1px solid var(--border); background:var(--bg-dark); color:white; border-radius:5px; cursor:pointer" onclick="setPrintMode(1, this)">1 x Hoja</button>
-                        <button class="btn-p-opt" style="flex:1; padding:10px; border:1px solid var(--border); background:var(--bg-dark); color:#aaa; border-radius:5px; cursor:pointer" onclick="setPrintMode(2, this)">2 x Hoja</button>
-                        <button class="btn-p-opt" style="flex:1; padding:10px; border:1px solid var(--border); background:var(--bg-dark); color:#aaa; border-radius:5px; cursor:pointer" onclick="setPrintMode(6, this)">6 x Hoja</button>
+                        <button class="btn-p-opt" style="flex:1; padding:10px; border:1px solid var(--border); background:var(--bg-dark); color:#aaa; border-radius:5px; cursor:pointer" onclick="setPrintMode(2, this)">2 x Hoja (Compacto)</button>
+                        <button class="btn-p-opt" style="flex:1; padding:10px; border:1px solid var(--accent); background:rgba(59, 130, 246, 0.1); color:var(--accent); border-radius:5px; cursor:pointer; font-weight:700" onclick="setPrintMode('mini', this)">🏭 5x2.5cm (2 Col)</button>
                     </div>
+                    <p style="font-size:10px; color:#666; margin-top:10px">Nota: El modo "5x2.5cm" imprimirá 2 etiquetas por fila (si el rollo es doble).</p>
                 </div>
             </div>
 
@@ -340,8 +460,15 @@
 
             <div id="form-hist" class="form-section">
                 <div class="section-title">Base de Datos</div>
+                
+                <div style="display:flex; gap:10px; margin-bottom:15px">
+                    <button class="btn btn-filter" style="flex:1; background:var(--bg-panel); border:1px solid var(--border); color:white; font-size:10px" onclick="setHistoryFilter('ALL', this)">📋 TODOS</button>
+                    <button class="btn btn-filter" style="flex:1; background:var(--bg-panel); border:1px solid var(--accent); color:var(--accent); font-size:10px" onclick="setHistoryFilter('ENVIO', this)">📦 ENVIOS</button>
+                    <button class="btn btn-filter" style="flex:1; background:var(--bg-panel); border:1px solid var(--warning); color:var(--warning); font-size:10px" onclick="setHistoryFilter('INDUSTRIAL', this)">🏭 INDUSTRIAL</button>
+                </div>
+
                 <div class="input-group">
-                    <input type="text" placeholder="🔍 Filtrar historial por guía o nombre..." onkeyup="filterHistory(this.value)" style="margin-bottom:15px">
+                    <input type="text" id="histSearch" placeholder="🔍 Buscar en historial..." onkeyup="updateHistory()" style="margin-bottom:15px">
                 </div>
                 <div style="overflow-x:auto;">
                     <table class="history-table">
@@ -416,6 +543,7 @@
         // --- BASE DE DATOS LOCAL ---
         let db = JSON.parse(localStorage.getItem('saga_pro_db_v2')) || [];
         let packingBuffer = [];
+        let currentHistoryFilter = 'ALL';
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -425,6 +553,8 @@
                 checkPublicTracking();
             }
             updatePreview(); 
+            // Iniciar filtro en 'ALL' y activar visualmente el primer botón
+            setHistoryFilter('ALL', document.querySelector('.btn-filter')); 
         };
 
         // --- PREVIEW DINÁMICO ---
@@ -497,9 +627,20 @@
         }
 
         function setPrintMode(n, btn) {
-            document.querySelectorAll('.btn-p-opt').forEach(b => { b.style.background = 'var(--bg-dark)'; b.style.color = '#aaa'; b.style.borderColor = 'var(--border)'; });
-            btn.style.background = 'var(--success)'; btn.style.color = 'white'; btn.style.borderColor = 'var(--success)';
-            document.body.className = n === 1 ? 'print-x1' : 'print-x' + n;
+            document.querySelectorAll('.btn-p-opt').forEach(b => { 
+                b.style.background = 'var(--bg-dark)'; 
+                b.style.color = '#aaa'; 
+                b.style.borderColor = 'var(--border)'; 
+            });
+            btn.style.background = 'var(--success)'; 
+            btn.style.color = 'white'; 
+            btn.style.borderColor = 'var(--success)';
+            
+            if (n === 'mini') {
+                document.body.className = 'print-mini';
+            } else {
+                document.body.className = n === 1 ? 'print-x1' : 'print-x' + n;
+            }
         }
 
         function addToPacking() {
@@ -517,10 +658,16 @@
             entry.events.push({ status: 'ADMITIDO EN ORIGEN', loc: 'FUSAGASUGÁ HUB', date: new Date().toLocaleString(), user: 'ADMIN' });
             if(type === 'PACKING') { entry.items = [...packingBuffer]; entry.title = "PACKING LIST"; entry.v1 = "ITEMS"; entry.v2 = packingBuffer.length; packingBuffer = []; document.getElementById('temp-packing-list').innerHTML = ""; }
             db.unshift(entry); saveDB();
+            
+            // Generar etiqueta en la cola
             const copies = type === 'ENVIO' ? parseInt(document.getElementById('gCopies').value) || 1 : 1;
             for(let i=0; i<copies; i++) renderCorporateLabel(entry);
-            alert("✅ Registro Exitoso: " + id);
+            
+            // Feedback
+            alert("✅ Registro Exitoso: " + id + "\nLa etiqueta se ha añadido a la cola de impresión.");
             updateStats();
+            
+            // Limpiar formulario Envio
             if(type==='ENVIO') { document.getElementById('gDest').value=''; document.getElementById('gCont').value=''; updatePreview(); }
         }
 
@@ -528,15 +675,72 @@
             const card = document.createElement('div');
             card.className = 'corp-label';
             const qrid = "qr_" + Math.random().toString(16).slice(2);
+            const qrid_mini = "qrm_" + Math.random().toString(16).slice(2);
+
             const currentUrl = window.location.href.split('?')[0]; 
             const smartLink = `${currentUrl}?guia=${data.id}`;
-            let mainContent = data.type === 'PACKING' ? `<div style="font-size:10px; overflow:hidden"><b>LISTA DE EMPAQUE:</b><br>${data.items.slice(0,8).map(i => `${i.item} (${i.qty})`).join(', ')}...</div>` : `<span class="lbl-sm">DESTINATARIO:</span><div class="lbl-md">${data.info}</div><div style="margin-top:10px"><span class="lbl-sm">CONTENIDO:</span><div style="font-size:12px">${data.title}</div></div>`;
-            card.innerHTML = `<button style="position:absolute; top:0; right:-30px; background:red; color:white; border:none; padding:5px; cursor:pointer" onclick="this.parentElement.remove()">X</button><div class="cl-header"><div class="cl-logo">NICHOLL´S TACTICA </div><div class="cl-date">ORIGEN: FUSAGASUGÁ<br>${data.date.split(',')[0]}</div></div><div class="cl-body"><div class="cl-main-info">${mainContent}<div style="margin-top:auto; font-size:36px; font-weight:900">FUSA-COL</div></div><div class="cl-meta-info"><div class="cl-box"><span class="lbl-sm">PESO (KG)</span><span class="lbl-xl">${data.v1.replace('KG','')}</span></div><div class="cl-box"><span class="lbl-sm">PIEZAS</span><span class="lbl-xl">${data.v2}</span></div></div></div><div class="cl-barcode-strip"><div class="fake-code">${data.id}</div></div><div class="cl-footer"><div id="${qrid}" class="cl-qr"></div><div class="cl-tracking-big">${data.id}</div></div><div class="icon-box">!</div>`;
-            document.getElementById('label-container').prepend(card);
+            
+            let mainContent = data.type === 'PACKING' 
+                ? `<div style="font-size:10px; overflow:hidden"><b>LISTA DE EMPAQUE:</b><br>${data.items.slice(0,8).map(i => `${i.item} (${i.qty})`).join(', ')}...</div>` 
+                : `<span class="lbl-sm">DESTINATARIO:</span><div class="lbl-md">${data.info}</div><div style="margin-top:10px"><span class="lbl-sm">CONTENIDO:</span><div style="font-size:12px">${data.title}</div></div>`;
+
+            // --- CONTENIDO MODO MINI 5x2.5 NUEVO DISEÑO ALTO CONTRASTE ---
+            let miniContent = `
+                <div class="mini-layout">
+                    <div class="mini-qr-box" id="${qrid_mini}"></div>
+                    <div class="mini-content-box">
+                        <div class="mini-header">
+                            <div class="mini-prod-name">${data.title}</div>
+                        </div>
+                        <div class="mini-body">
+                            <span class="mini-qty-lbl">CANT</span>
+                            <span class="mini-qty-val">${data.v2}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            card.innerHTML = `
+                <button style="position:absolute; top:0; right:-30px; background:red; color:white; border:none; padding:5px; cursor:pointer; z-index:999" onclick="this.parentElement.remove()">X</button>
+                
+                ${miniContent}
+
+                <div class="cl-header"><div class="cl-logo">NICHOLL´S TACTICA </div><div class="cl-date">ORIGEN: FUSAGASUGÁ<br>${data.date.split(',')[0]}</div></div>
+                <div class="cl-body"><div class="cl-main-info">${mainContent}<div style="margin-top:auto; font-size:36px; font-weight:900">FUSA-COL</div></div><div class="cl-meta-info"><div class="cl-box"><span class="lbl-sm">PESO (KG)</span><span class="lbl-xl">${data.v1.replace('KG','')}</span></div><div class="cl-box"><span class="lbl-sm">PIEZAS</span><span class="lbl-xl">${data.v2}</span></div></div></div>
+                <div class="cl-barcode-strip"><div class="fake-code">${data.id}</div></div>
+                <div class="cl-footer"><div id="${qrid}" class="cl-qr"></div><div class="cl-tracking-big">${data.id}</div></div>
+                <div class="icon-box">!</div>
+            `;
+            
+            document.getElementById('label-container').append(card); 
+            
             setTimeout(() => new QRCode(document.getElementById(qrid), { text: smartLink, width: 75, height: 75, correctLevel: QRCode.CorrectLevel.L }), 50);
+            // QR Mini ajustado
+            setTimeout(() => new QRCode(document.getElementById(qrid_mini), { text: smartLink, width: 60, height: 60, correctLevel: QRCode.CorrectLevel.L }), 50);
         }
 
-        function updateHistory() { renderHistoryTable(db); }
+        // --- HISTORIAL Y FILTROS ---
+        function setHistoryFilter(type, btn) {
+            currentHistoryFilter = type;
+            document.querySelectorAll('.btn-filter').forEach(b => b.style.opacity = '0.5');
+            btn.style.opacity = '1';
+            updateHistory();
+        }
+
+        function updateHistory() { 
+            const query = document.getElementById('histSearch').value.toUpperCase();
+            let filtered = db;
+            if (currentHistoryFilter === 'ENVIO') {
+                filtered = db.filter(i => i.type === 'ENVIO' || i.type === 'PACKING');
+            } else if (currentHistoryFilter === 'INDUSTRIAL') {
+                filtered = db.filter(i => i.type === 'INDUSTRIAL');
+            }
+            if(query) {
+                filtered = filtered.filter(i => i.id.includes(query) || i.info.includes(query));
+            }
+            renderHistoryTable(filtered); 
+        }
+
         function renderHistoryTable(dataArr) {
             const tbody = document.getElementById('history-rows');
             if(dataArr.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:#666">No hay registros</td></tr>`; return; }
@@ -547,7 +751,6 @@
             }).join('');
         }
 
-        function filterHistory(query) { const q = query.toUpperCase(); const filtered = db.filter(i => i.id.includes(q) || i.info.includes(q)); renderHistoryTable(filtered); }
         function deleteItem(id) { if(confirm('¿Eliminar guía ' + id + '?')) { db = db.filter(i => i.id !== id); saveDB(); updateHistory(); updateStats(); } }
         function clearHistory() { if(confirm('¿BORRAR TODO?')) { db = []; saveDB(); updateHistory(); updateStats(); } }
 
